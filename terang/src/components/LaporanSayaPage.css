@@ -452,6 +452,10 @@
    Responsive Adaptations
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+  .lps-container {
+    padding: 24px 16px 0;
+  }
+
   .lps-filter-row {
     flex-direction: column;
     align-items: flex-start;

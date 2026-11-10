@@ -812,9 +812,9 @@
 
 @media (max-width: 640px) {
   .detail-laporan-main {
-    padding-top: 20px;
-    padding-bottom: 48px;
+    padding: 20px 16px 48px;
     gap: 20px;
+    box-sizing: border-box;
   }
 
   .detail-laporan-header-card {

@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getUserInitials } from '../services/authService';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { deduplicateReports, normalizeReportId } from '../services/demoAuthService';
+import AppNavbar from './AppNavbar';
 import './DashboardPage.css';
 import './LaporanSayaPage.css';
 
@@ -159,69 +159,16 @@ function PlusIcon() {
 
 export default function LaporanSayaPage({ user, onLogout }) {
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
-
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
-  const [avatarImgError, setAvatarImgError] = useState(false);
 
   // Filter & Search states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Semua Status');
-
-  // User Profile
-  const displayName =
-    user?.fullName ||
-    user?.name ||
-    (user?.email ? user.email.split('@')[0] : 'Warga TERANG');
-  const avatarInitials = user?.initials || getUserInitials(displayName);
-  const avatarUrl = user?.avatarUrl || null;
 
   // Laporan asli milik akun pengguna yang sedang login (dibersihkan dari duplikasi ID)
   const userReports = useMemo(() => {
     const raw = Array.isArray(user?.reports) ? user.reports : [];
     return deduplicateReports(raw);
   }, [user]);
-
-  // Handle click outside profile dropdown
-  useEffect(() => {
-    if (!profileMenuOpen) return undefined;
-
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [profileMenuOpen]);
-
-  const handleLogoutClick = async () => {
-    setProfileMenuOpen(false);
-    if (typeof onLogout === 'function') {
-      await onLogout();
-    }
-    navigate('/', { replace: true });
-  };
-
-  const handleBrandClick = async (e) => {
-    e.preventDefault();
-    if (typeof onLogout === 'function') {
-      await onLogout();
-    }
-    navigate('/', { replace: true });
-  };
 
   // Filtered reports calculation — search and status filter bekerja bersamaan
   // Pencarian dibatasi berdasarkan ID, judul, atau kategori laporan sesuai spesifikasi
@@ -332,160 +279,8 @@ export default function LaporanSayaPage({ user, onLogout }) {
 
   return (
     <div className="laporan-saya-page">
-      {/* Top Authenticated Navbar */}
-      <header className="dashboard-navbar">
-        <div className="dashboard-navbar-inner">
-          <a
-            href="/"
-            className="dashboard-brand-link"
-            onClick={handleBrandClick}
-            aria-label="TERANG — Kembali ke Beranda"
-          >
-            {!logoError ? (
-              <img
-                src="/logo-terang.png"
-                alt="TERANG"
-                className="dashboard-brand-logo"
-                width="148"
-                height="33"
-                onError={() => setLogoError(true)}
-              />
-            ) : (
-              <span className="dashboard-brand-fallback">TERANG</span>
-            )}
-          </a>
-
-          {/* Navigation After Login: Dashboard, Peta Laporan, Transparansi, Laporan Saya (Active) */}
-          <nav aria-label="Navigasi Utama">
-            <ul className="dashboard-nav-center">
-              <li>
-                <Link to="/dashboard" className="dashboard-nav-item">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link to="/peta-laporan" className="dashboard-nav-item">
-                  Peta Laporan
-                </Link>
-              </li>
-              <li>
-                <Link to="/transparansi" className="dashboard-nav-item">
-                  Transparansi
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/laporan-saya"
-                  className="dashboard-nav-item active"
-                  aria-current="page"
-                >
-                  Laporan Saya
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          {/* User Profile Dropdown */}
-          <div className="dashboard-profile-wrap" ref={dropdownRef}>
-            <button
-              type="button"
-              className={`dashboard-profile-trigger ${profileMenuOpen ? 'open' : ''}`}
-              onClick={() => setProfileMenuOpen((prev) => !prev)}
-              aria-expanded={profileMenuOpen}
-              aria-haspopup="menu"
-              aria-label={`Menu profil ${displayName}`}
-            >
-              <span className="dashboard-avatar" aria-hidden="true">
-                {avatarUrl && !avatarImgError ? (
-                  <img
-                    src={avatarUrl}
-                    alt={displayName}
-                    className="dashboard-avatar-img"
-                    onError={() => setAvatarImgError(true)}
-                  />
-                ) : (
-                  <span>{avatarInitials}</span>
-                )}
-              </span>
-              <span className="dashboard-profile-name">{displayName}</span>
-              <svg
-                className={`dashboard-profile-chevron ${profileMenuOpen ? 'open' : ''}`}
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-
-            {profileMenuOpen && (
-              <div
-                className="dashboard-profile-dropdown"
-                role="menu"
-                aria-label="Menu Akun Warga"
-              >
-                <div className="dashboard-dropdown-header">
-                  <div className="dashboard-dropdown-name">{displayName}</div>
-                  {user?.email && (
-                    <div className="dashboard-dropdown-email">{user.email}</div>
-                  )}
-                </div>
-
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="dashboard-dropdown-item"
-                  onClick={() => {
-                    setProfileMenuOpen(false);
-                    navigate('/dashboard');
-                  }}
-                >
-                  <span>Dashboard Warga</span>
-                </button>
-
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="dashboard-dropdown-item"
-                  onClick={() => {
-                    setProfileMenuOpen(false);
-                    navigate('/laporan-saya');
-                  }}
-                >
-                  <span>Laporan Saya</span>
-                </button>
-
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="dashboard-dropdown-item"
-                  onClick={() => {
-                    setProfileMenuOpen(false);
-                    navigate('/profil');
-                  }}
-                >
-                  <span>Profil Saya</span>
-                </button>
-
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="dashboard-dropdown-item dashboard-dropdown-logout"
-                  onClick={handleLogoutClick}
-                >
-                  <span>Keluar</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      {/* Top Navbar Responsif TERANG dengan Mobile Hamburger */}
+      <AppNavbar user={user} onLogout={onLogout} currentPage="laporan-saya" />
 
       {/* Main Content Area */}
       <main className="lps-main">

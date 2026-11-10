@@ -63,6 +63,18 @@ export default function Navbar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [navLinks]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+    return undefined;
+  }, [mobileMenuOpen]);
+
   useEffect(() => {
     if (!mobileMenuOpen && !profileMenuOpen) return undefined;
     const handleKeyDown = (e) => {
@@ -300,58 +312,79 @@ export default function Navbar({
         </button>
       </div>
 
-      {/* Mobile Dropdown Drawer */}
+      {/* Mobile Drawer & Backdrop */}
       {mobileMenuOpen && (
-        <div className="navbar-mobile-menu" role="dialog" aria-label="Menu Navigasi Mobile">
-          <ul className="navbar-mobile-links">
-            {navLinks.map((item) => (
-              <li key={item.key}>
-                <a
-                  href={item.href}
-                  className={`navbar-mobile-link ${activeKey === item.key ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(e, item)}
+        <>
+          <div
+            className="landing-mobile-backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Tutup menu navigasi"
+          />
+          <aside
+            className="landing-mobile-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu Navigasi Mobile"
+          >
+            <div className="landing-mobile-drawer-header">
+              <span className="landing-mobile-drawer-title">Menu Navigasi</span>
+              <button
+                type="button"
+                className="landing-mobile-close-btn"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Tutup menu"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
                 >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          {!isAuthenticated ? (
-            <div className="navbar-mobile-actions">
-              <button
-                type="button"
-                className="navbar-btn navbar-btn-masuk"
-                onClick={() => triggerAuthRoute('/masuk')}
-              >
-                Masuk
-              </button>
-              <button
-                type="button"
-                className="navbar-btn navbar-btn-daftar"
-                onClick={() => triggerAuthRoute('/daftar')}
-              >
-                Daftar
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
-          ) : (
-            <div className="navbar-mobile-actions">
-              <button
-                type="button"
-                className="navbar-btn navbar-btn-masuk"
-                onClick={() => triggerAuthRoute('/dashboard')}
-              >
-                {displayName}
-              </button>
-              <button
-                type="button"
-                className="navbar-btn navbar-btn-daftar"
-                onClick={handleLogoutClick}
-              >
-                Keluar
-              </button>
+
+            <div className="landing-mobile-drawer-content">
+              <ul className="landing-mobile-nav-list">
+                {PUBLIC_NAV_LINKS.map((item) => (
+                  <li key={item.key}>
+                    <a
+                      href={item.href}
+                      className={`landing-mobile-nav-link ${activeKey === item.key ? 'active' : ''}`}
+                      onClick={(e) => handleNavClick(e, item)}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="landing-mobile-actions">
+                <button
+                  type="button"
+                  className="landing-mobile-btn-masuk"
+                  onClick={() => triggerAuthRoute('/masuk')}
+                >
+                  Masuk
+                </button>
+                <button
+                  type="button"
+                  className="landing-mobile-btn-daftar"
+                  onClick={() => triggerAuthRoute('/daftar')}
+                >
+                  Daftar
+                </button>
+              </div>
             </div>
-          )}
-        </div>
+          </aside>
+        </>
       )}
     </header>
   );

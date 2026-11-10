@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import AppNavbar from './AppNavbar';
+import { useState, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TRANSPARANSI_REPORTS } from '../data/transparansiData';
-import { getUserInitials } from '../services/authService';
 import './DashboardPage.css';
 import './TransparansiPage.css';
 
@@ -48,23 +48,13 @@ function PinIcon() {
 
 export default function TransparansiPage({ user, onLogout }) {
   const navigate = useNavigate();
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
-  const [avatarImgError, setAvatarImgError] = useState(false);
   const [photoError, setPhotoError] = useState({});
-  const dropdownRef = useRef(null);
   const detailRef = useRef(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [groupFilter, setGroupFilter] = useState('semua');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [selectedId, setSelectedId] = useState(TRANSPARANSI_REPORTS[0]?.id || null);
-
-  const isAuthenticated = Boolean(user);
-  const displayName =
-    user?.fullName || user?.name || (user?.email ? user.email.split('@')[0] : 'Warga TERANG');
-  const avatarInitials = user?.initials || getUserInitials(displayName);
-  const avatarUrl = user?.avatarUrl || null;
 
   // Ringkasan dihitung langsung dari dataset (24 / 16 / 6 / 2)
   const summary = useMemo(() => {
@@ -93,24 +83,6 @@ export default function TransparansiPage({ user, onLogout }) {
   const selectedReport =
     filteredReports.find((r) => r.id === selectedId) || filteredReports[0] || null;
 
-  useEffect(() => {
-    if (!profileMenuOpen) return undefined;
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setProfileMenuOpen(false);
-      }
-    };
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setProfileMenuOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [profileMenuOpen]);
-
   const handleSelect = (id) => {
     setSelectedId(id);
     if (window.matchMedia('(max-width: 960px)').matches && detailRef.current) {
@@ -134,24 +106,6 @@ export default function TransparansiPage({ user, onLogout }) {
     setVisibleCount(PAGE_SIZE);
   };
 
-  const handleLogoutClick = async () => {
-    setProfileMenuOpen(false);
-    if (typeof onLogout === 'function') await onLogout();
-    navigate('/', { replace: true });
-  };
-
-  const handleBrandClick = async (e) => {
-    e.preventDefault();
-    if (isAuthenticated && typeof onLogout === 'function') await onLogout();
-    navigate('/', { replace: true });
-  };
-
-  const goToLaporanSaya = (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    setProfileMenuOpen(false);
-    navigate('/laporan-saya');
-  };
-
   const statItems = [
     { key: 'semua', value: summary.semua, label: 'Total laporan', tone: null },
     { key: 'aktif', value: summary.aktif, label: 'Aktif', tone: 'aktif' },
@@ -162,102 +116,7 @@ export default function TransparansiPage({ user, onLogout }) {
   return (
     <div className="trp-page">
       {/* Navbar — Transparansi aktif */}
-      <header className="dashboard-navbar">
-        <div className="dashboard-navbar-inner">
-          <a
-            href="/"
-            className="dashboard-brand-link"
-            onClick={handleBrandClick}
-            aria-label="TERANG — Kembali ke Halaman Utama"
-          >
-            {!logoError ? (
-              <img src="/logo-terang.png" alt="TERANG" className="dashboard-brand-logo"
-                width="148" height="33" onError={() => setLogoError(true)} />
-            ) : (
-              <span className="dashboard-brand-fallback">TERANG</span>
-            )}
-          </a>
-
-          <nav aria-label="Navigasi Utama TERANG">
-            <ul className="dashboard-nav-center">
-              <li>
-                {isAuthenticated ? (
-                  <Link to="/dashboard" className="dashboard-nav-item">Dashboard</Link>
-                ) : (
-                  <Link to="/" className="dashboard-nav-item">Beranda</Link>
-                )}
-              </li>
-              <li>
-                <Link to="/peta-laporan" className="dashboard-nav-item">Peta Laporan</Link>
-              </li>
-              <li>
-                <Link to="/transparansi" className="dashboard-nav-item active" aria-current="page">
-                  Transparansi
-                </Link>
-              </li>
-              {isAuthenticated && (
-                <li>
-                  <Link to="/laporan-saya" className="dashboard-nav-item">
-                    Laporan Saya
-                  </Link>
-                </li>
-              )}
-            </ul>
-          </nav>
-
-          {isAuthenticated ? (
-            <div className="dashboard-profile-wrap" ref={dropdownRef}>
-              <button type="button"
-                className={`dashboard-profile-trigger ${profileMenuOpen ? 'open' : ''}`}
-                onClick={() => setProfileMenuOpen((prev) => !prev)}
-                aria-expanded={profileMenuOpen} aria-haspopup="menu"
-                aria-label={`Menu profil ${displayName}`}>
-                <span className="dashboard-avatar" aria-hidden="true">
-                  {avatarUrl && !avatarImgError ? (
-                    <img src={avatarUrl} alt={displayName} className="dashboard-avatar-img"
-                      onError={() => setAvatarImgError(true)} />
-                  ) : (
-                    <span>{avatarInitials}</span>
-                  )}
-                </span>
-                <span className="dashboard-profile-name">{displayName}</span>
-                <svg className={`dashboard-profile-chevron ${profileMenuOpen ? 'open' : ''}`}
-                  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-
-              {profileMenuOpen && (
-                <div className="dashboard-profile-dropdown" role="menu" aria-label="Menu Akun Warga">
-                  <div className="dashboard-dropdown-header">
-                    <div className="dashboard-dropdown-name">{displayName}</div>
-                    {user?.email && <div className="dashboard-dropdown-email">{user.email}</div>}
-                  </div>
-                  <button type="button" role="menuitem" className="dashboard-dropdown-item"
-                    onClick={() => { setProfileMenuOpen(false); navigate('/dashboard'); }}>
-                    <span>Dashboard Warga</span>
-                  </button>
-                  <button type="button" role="menuitem" className="dashboard-dropdown-item"
-                    onClick={goToLaporanSaya}>
-                    <span>Laporan Saya</span>
-                  </button>
-                  <button type="button" role="menuitem"
-                    className="dashboard-dropdown-item dashboard-dropdown-logout"
-                    onClick={handleLogoutClick}>
-                    <span>Keluar</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="trp-public-auth">
-              <Link to="/masuk" className="trp-auth-link">Masuk</Link>
-              <Link to="/daftar" className="trp-auth-cta">Buat Laporan</Link>
-            </div>
-          )}
-        </div>
-      </header>
+      <AppNavbar user={user} onLogout={onLogout} currentPage="transparansi" />
 
       <main className="trp-main">
         {/* Header halaman */}

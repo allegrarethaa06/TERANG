@@ -13,7 +13,7 @@ import 'leaflet/dist/leaflet.css';
 
 import { SAMPLE_REPORTS } from '../data/reportsData';
 import { COBLONG_CENTER } from '../services/geoapifyService';
-import { getUserInitials } from '../services/authService';
+import AppNavbar from './AppNavbar';
 import './DashboardPage.css';
 import './PetaLaporanPage.css';
 
@@ -165,12 +165,6 @@ function MapViewportController({ focusTarget, mobileViewTab }) {
 export default function PetaLaporanPage({ user, onLogout }) {
   const navigate = useNavigate();
 
-  // Navbar state
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
-  const [avatarImgError, setAvatarImgError] = useState(false);
-  const dropdownRef = useRef(null);
-
   // Filter & Search state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua Kategori');
@@ -187,14 +181,6 @@ export default function PetaLaporanPage({ user, onLogout }) {
 
   const markerRefs = useRef({});
   const cardRefs = useRef({});
-
-  const isAuthenticated = Boolean(user);
-  const displayName =
-    user?.fullName ||
-    user?.name ||
-    (user?.email ? user.email.split('@')[0] : 'Warga TERANG');
-  const avatarInitials = user?.initials || getUserInitials(displayName);
-  const avatarUrl = user?.avatarUrl || null;
 
   // Gabungkan laporan pengguna (sesi demo) dan SAMPLE_REPORTS tanpa duplikasi
   const allReports = useMemo(() => {
@@ -303,30 +289,6 @@ export default function PetaLaporanPage({ user, onLogout }) {
     selectedStatus !== 'Semua Status' ||
     selectedPriority !== 'Semua Prioritas';
 
-  // Close profile dropdown on outside click or Escape
-  useEffect(() => {
-    if (!profileMenuOpen) return undefined;
-
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [profileMenuOpen]);
-
   // Buka popup marker secara terprogram ketika kartu laporan diklik
   useEffect(() => {
     if (!selectedReportId) return undefined;
@@ -383,222 +345,10 @@ export default function PetaLaporanPage({ user, onLogout }) {
     }));
   };
 
-  const handleLogoutClick = async () => {
-    setProfileMenuOpen(false);
-    if (typeof onLogout === 'function') {
-      await onLogout();
-    }
-    navigate('/', { replace: true });
-  };
-
-  const handleBrandClick = async (e) => {
-    e.preventDefault();
-    if (isAuthenticated && typeof onLogout === 'function') {
-      await onLogout();
-    }
-    navigate('/', { replace: true });
-  };
-
   return (
     <div className="peta-laporan-page">
       {/* Top Navbar: Menggunakan "Dashboard" saat sudah login, dan highlight kuning pada "Peta Laporan" */}
-      <header className="dashboard-navbar peta-navbar">
-        <div className="dashboard-navbar-inner">
-          <a
-            href="/"
-            className="dashboard-brand-link"
-            onClick={handleBrandClick}
-            aria-label="TERANG — Kembali ke Halaman Utama"
-          >
-            {!logoError ? (
-              <img
-                src="/logo-terang.png"
-                alt="TERANG"
-                className="dashboard-brand-logo"
-                width="148"
-                height="33"
-                onError={() => setLogoError(true)}
-              />
-            ) : (
-              <span className="dashboard-brand-fallback">TERANG</span>
-            )}
-          </a>
-
-          <nav aria-label="Navigasi Utama TERANG">
-            <ul className="dashboard-nav-center">
-              {isAuthenticated ? (
-                <>
-                  <li>
-                    <Link to="/dashboard" className="dashboard-nav-item">
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/peta-laporan"
-                      className="dashboard-nav-item active"
-                      aria-current="page"
-                    >
-                      Peta Laporan
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/transparansi" className="dashboard-nav-item">
-                      Transparansi
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/laporan-saya"
-                      className="dashboard-nav-item"
-                    >
-                      Laporan Saya
-                    </Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <Link to="/" className="dashboard-nav-item">
-                      Beranda
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/peta-laporan"
-                      className="dashboard-nav-item active"
-                      aria-current="page"
-                    >
-                      Peta Laporan
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/transparansi" className="dashboard-nav-item">
-                      Transparansi
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
-          </nav>
-
-          {isAuthenticated ? (
-            <div className="dashboard-profile-wrap" ref={dropdownRef}>
-              <button
-                type="button"
-                className={`dashboard-profile-trigger ${
-                  profileMenuOpen ? 'open' : ''
-                }`}
-                onClick={() => setProfileMenuOpen((prev) => !prev)}
-                aria-expanded={profileMenuOpen}
-                aria-haspopup="menu"
-                aria-label={`Menu profil ${displayName}`}
-              >
-                <span className="dashboard-avatar" aria-hidden="true">
-                  {avatarUrl && !avatarImgError ? (
-                    <img
-                      src={avatarUrl}
-                      alt={displayName}
-                      className="dashboard-avatar-img"
-                      onError={() => setAvatarImgError(true)}
-                    />
-                  ) : (
-                    <span>{avatarInitials}</span>
-                  )}
-                </span>
-                <span className="dashboard-profile-name">{displayName}</span>
-                <svg
-                  className={`dashboard-profile-chevron ${
-                    profileMenuOpen ? 'open' : ''
-                  }`}
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-
-              {profileMenuOpen && (
-                <div
-                  className="dashboard-profile-dropdown"
-                  role="menu"
-                  aria-label="Menu Akun Warga"
-                >
-                  <div className="dashboard-dropdown-header">
-                    <div className="dashboard-dropdown-name">{displayName}</div>
-                    {user?.email && (
-                      <div className="dashboard-dropdown-email">
-                        {user.email}
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      navigate('/dashboard');
-                    }}
-                  >
-                    <span>Dashboard Warga</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      navigate('/laporan-saya');
-                    }}
-                  >
-                    <span>Laporan Saya</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      navigate('/buat-laporan');
-                    }}
-                  >
-                    <span>Buat Laporan Baru</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item dashboard-dropdown-logout"
-                    onClick={handleLogoutClick}
-                  >
-                    <span>Keluar</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="peta-public-auth-actions">
-              <Link to="/masuk" className="peta-auth-link">
-                Masuk
-              </Link>
-              <Link to="/daftar" className="peta-auth-cta">
-                Buat Laporan
-              </Link>
-            </div>
-          )}
-        </div>
-      </header>
+      <AppNavbar user={user} onLogout={onLogout} currentPage="peta-laporan" className="peta-navbar" />
 
       {/* Mobile View Switcher ("Daftar" vs "Peta") pada layar <= 900px */}
       <div

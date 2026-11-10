@@ -1,20 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
+import AppNavbar from './AppNavbar';
+import { useState, useEffect } from 'react';
+import { Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { getUserInitials, deduplicateReports } from '../services/authService';
+import { deduplicateReports } from '../services/authService';
 import { SAMPLE_REPORTS } from '../data/reportsData';
 import { TRANSPARANSI_REPORTS } from '../data/transparansiData';
 import './DashboardPage.css';
 import './DetailLaporanPage.css';
-
-const DETAIL_NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', href: '/dashboard', type: 'route' },
-  { key: 'peta-laporan', label: 'Peta Laporan', href: '/peta-laporan', type: 'route' },
-  { key: 'transparansi', label: 'Transparansi', href: '/transparansi', type: 'route' },
-  { key: 'laporan-saya', label: 'Laporan Saya', href: '/laporan-saya', type: 'route' },
-];
 
 function resolveReportCoordinates(report) {
   if (!report) return null;
@@ -86,18 +80,7 @@ export default function DetailLaporanPage({ user, onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
-  const [avatarImgError, setAvatarImgError] = useState(false);
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
-  const dropdownRef = useRef(null);
-
-  const displayName =
-    user?.fullName ||
-    user?.name ||
-    (user?.email ? user.email.split('@')[0] : 'Warga TERANG');
-  const avatarInitials = user?.initials || getUserInitials(displayName);
-  const avatarUrl = user?.avatarUrl || null;
 
   const userReports = deduplicateReports(Array.isArray(user?.reports) ? user.reports : []);
   const allReports = [...userReports, ...SAMPLE_REPORTS, ...TRANSPARANSI_REPORTS];
@@ -128,29 +111,6 @@ export default function DetailLaporanPage({ user, onLogout }) {
     navigate(user ? '/dashboard' : '/peta-laporan');
   };
 
-  useEffect(() => {
-    if (!profileMenuOpen) return undefined;
-
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [profileMenuOpen]);
-
   // Keyboard escape for lightbox
   useEffect(() => {
     if (!lightboxPhoto) return undefined;
@@ -166,40 +126,6 @@ export default function DetailLaporanPage({ user, onLogout }) {
   if (!report) {
     return <Navigate to={user ? '/dashboard' : '/peta-laporan'} replace />;
   }
-
-  const handleNavClick = (e, item) => {
-    e.preventDefault();
-
-    if (item.type === 'route') {
-      navigate(item.href);
-      return;
-    }
-
-    if (item.type === 'dashboard-anchor') {
-      navigate('/dashboard');
-      setTimeout(() => {
-        const el = document.querySelector('#laporan-saya');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 80);
-      return;
-    }
-  };
-
-  const handleLogoutClick = async () => {
-    setProfileMenuOpen(false);
-    if (typeof onLogout === 'function') {
-      await onLogout();
-    }
-    navigate('/', { replace: true });
-  };
-
-  const handleBrandClick = async (e) => {
-    e.preventDefault();
-    if (user && typeof onLogout === 'function') {
-      await onLogout();
-    }
-    navigate('/', { replace: true });
-  };
 
   const photos =
     Array.isArray(report.photoPreviews) && report.photoPreviews.length > 0
@@ -234,147 +160,7 @@ export default function DetailLaporanPage({ user, onLogout }) {
   return (
     <div className="detail-laporan-page">
       {/* Navbar TERANG */}
-      <header className="dashboard-navbar">
-        <div className="dashboard-navbar-inner">
-          <a
-            href="/"
-            className="dashboard-brand-link"
-            onClick={handleBrandClick}
-            aria-label="TERANG — Kembali ke Halaman Utama"
-          >
-            {!logoError ? (
-              <img
-                src="/logo-terang.png"
-                alt="TERANG"
-                className="dashboard-brand-logo"
-                width="148"
-                height="33"
-                onError={() => setLogoError(true)}
-              />
-            ) : (
-              <span className="dashboard-brand-fallback">TERANG</span>
-            )}
-          </a>
-
-          <nav aria-label="Navigasi Utama">
-            <ul className="dashboard-nav-center">
-              {user ? (
-                DETAIL_NAV_ITEMS.map((item) => (
-                  <li key={item.key}>
-                    <a
-                      href={item.href}
-                      className="dashboard-nav-item"
-                      onClick={(e) => handleNavClick(e, item)}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))
-              ) : (
-                <>
-                  <li><Link to="/" className="dashboard-nav-item">Beranda</Link></li>
-                  <li><Link to="/peta-laporan" className="dashboard-nav-item">Peta Laporan</Link></li>
-                  <li><Link to="/transparansi" className="dashboard-nav-item">Transparansi</Link></li>
-                </>
-              )}
-            </ul>
-          </nav>
-
-          {user ? (
-            <div className="dashboard-profile-wrap" ref={dropdownRef}>
-              <button
-                type="button"
-                className={`dashboard-profile-trigger ${profileMenuOpen ? 'open' : ''}`}
-                onClick={() => setProfileMenuOpen((prev) => !prev)}
-                aria-expanded={profileMenuOpen}
-                aria-haspopup="menu"
-                aria-label={`Menu profil ${displayName}`}
-              >
-                <span className="dashboard-avatar" aria-hidden="true">
-                  {avatarUrl && !avatarImgError ? (
-                    <img
-                      src={avatarUrl}
-                      alt={displayName}
-                      className="dashboard-avatar-img"
-                      onError={() => setAvatarImgError(true)}
-                    />
-                  ) : (
-                    <span>{avatarInitials}</span>
-                  )}
-                </span>
-                <span className="dashboard-profile-name">{displayName}</span>
-                <svg
-                  className={`dashboard-profile-chevron ${profileMenuOpen ? 'open' : ''}`}
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-
-              {profileMenuOpen && (
-                <div
-                  className="dashboard-profile-dropdown"
-                  role="menu"
-                  aria-label="Menu Akun Warga"
-                >
-                  <div className="dashboard-dropdown-header">
-                    <div className="dashboard-dropdown-name">{displayName}</div>
-                    {user?.email && (
-                      <div className="dashboard-dropdown-email">{user.email}</div>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      navigate('/dashboard');
-                    }}
-                  >
-                    <span>Dashboard Warga</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      navigate('/laporan-saya');
-                    }}
-                  >
-                    <span>Laporan Saya</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="dashboard-dropdown-item dashboard-dropdown-logout"
-                    onClick={handleLogoutClick}
-                  >
-                    <span>Keluar</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <Link to="/masuk" className="dashboard-nav-item">Masuk</Link>
-              <Link to="/daftar" className="dashboard-nav-item" style={{ backgroundColor: '#FFFF6B' }}>Buat Laporan</Link>
-            </div>
-          )}
-        </div>
-      </header>
+      <AppNavbar user={user} onLogout={onLogout} currentPage="" />
 
       {/* Main Content Detail Laporan */}
       <main className="detail-laporan-main">

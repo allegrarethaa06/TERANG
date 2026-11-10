@@ -23,9 +23,13 @@
   --trp-yellow-soft: #FFFEE8;
 
   min-height: 100svh;
+  width: 100%;
+  max-width: 100vw;
   background-color: #FFFFFF;
   color: var(--trp-text);
   font-family: var(--font-body, 'Inter', sans-serif);
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .trp-sr-only {
@@ -38,9 +42,11 @@
 }
 
 .trp-main {
+  width: 100%;
   max-width: 1320px;
   margin: 0 auto;
   padding: 36px clamp(16px, 4vw, 48px) 72px;
+  box-sizing: border-box;
 }
 
 /* ---------- Public auth actions (navbar non-login) ---------- */
@@ -956,22 +962,30 @@
 
 @media (max-width: 640px) {
   .trp-main {
-    padding-top: 24px;
-    padding-bottom: 48px;
+    padding: 20px 16px 48px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .trp-header {
     flex-direction: column;
+    align-items: flex-start;
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .trp-stats {
     grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .trp-stat {
     justify-content: flex-start;
-    padding: 16px 18px;
+    padding: 14px 14px;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .trp-stat + .trp-stat { border-left: 0; }

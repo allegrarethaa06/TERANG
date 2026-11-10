@@ -1979,8 +1979,9 @@
 
 @media (max-width: 480px) {
   .lapor-main {
-    padding: 16px 14px 44px;
+    padding: 16px 16px 44px;
     gap: 16px;
+    box-sizing: border-box;
   }
 
   .lapor-header-card,

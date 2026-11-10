@@ -598,6 +598,10 @@
    Responsive Adaptations
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+  .profil-container {
+    padding: 24px 16px 0;
+  }
+
   .profil-grid {
     grid-template-columns: 1fr;
   }

@@ -525,40 +525,56 @@
 @media (max-width: 960px) {
   .auth-page-split {
     grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
   }
 
-  .auth-visual-panel {
-    min-height: 300px;
-    max-height: 360px;
-    padding: 28px 24px;
-  }
-
+  /* Utamakan form di mobile & tablet, letakkan visual panel di bawah */
   .auth-form-panel {
+    order: 1;
     min-height: auto;
     padding: 28px 24px 36px;
   }
 
+  .auth-visual-panel {
+    order: 2;
+    min-height: 220px;
+    max-height: 280px;
+    padding: 24px 24px;
+  }
+
   .auth-form-container,
   .auth-page-register .auth-form-container {
-    padding: 28px 0;
+    padding: 20px 0;
   }
 }
 
 @media (max-width: 640px) {
   .auth-visual-panel {
-    min-height: 240px;
-    padding: 22px 18px;
+    min-height: 180px;
+    max-height: 220px;
+    padding: 20px 18px;
   }
 
   .auth-visual-title {
-    font-size: 1.55rem;
+    font-size: 1.35rem;
+  }
+
+  .auth-visual-caption {
+    gap: 8px;
   }
 
   .auth-form-panel {
-    padding: 22px 18px 28px;
+    padding: 20px 16px 28px;
   }
 
   .auth-top-bar {
     flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .auth-btn-submit {
+    height: 48px;
+    font-size: 0.95rem;
   }
 }
