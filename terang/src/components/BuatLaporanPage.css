@@ -1,0 +1,2011 @@
+/* ==========================================================================
+   TERANG — Form Lapor 3 Tahap (/buat-laporan)
+   Design System: Primary Yellow #FFFF6B | Dark Blue #271A62 | White #FFFFFF
+   Typography Hierarchy:
+   - Judul halaman: Plus Jakarta Sans, Bold 700, 30–32px, #271A62
+   - Judul bagian: Plus Jakarta Sans, SemiBold 600, 20–22px, #271A62
+   - Label input: Inter, Medium 500, 14–15px, #343446
+   - Informasi penting: Inter / Plus Jakarta Sans, Medium/SemiBold 500–600, #303040
+   - Deskripsi & petunjuk: Inter, Regular 400, 14–16px, #667085
+   - Metadata & koordinat: Inter, Regular 400, 13–14px, #667085
+   - Tombol: Plus Jakarta Sans, SemiBold 600
+   ========================================================================== */
+
+.lapor-page {
+  min-height: 100svh;
+  width: 100%;
+  background-color: var(--c-white);
+  color: #303040;
+  display: flex;
+  flex-direction: column;
+}
+
+.lapor-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(20px, 2.6vw, 32px) clamp(16px, 4vw, 48px) 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   Header & 3-Stage Stepper (Konsisten di Step 1, 2, dan 3)
+   -------------------------------------------------------------------------- */
+.lapor-header-card {
+  background-color: var(--c-white);
+  border: 1px solid #E4E7EC;
+  border-radius: 16px;
+  padding: clamp(18px, 2.2vw, 24px) clamp(18px, 2.8vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(39, 26, 98, 0.03);
+}
+
+.lapor-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Judul halaman: Bold 700, 30–32px, biru #271A62 */
+.lapor-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.65rem, 2.3vw, 2rem); /* ~30–32px di desktop */
+  font-weight: 700;
+  color: #271A62;
+  letter-spacing: -0.02em;
+  line-height: 1.22;
+  margin-bottom: 6px;
+}
+
+/* Deskripsi dan petunjuk: Regular 400, 14–16px, abu #667085 */
+.lapor-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 1.1vw, 0.96rem);
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+}
+
+/* Stepper 3 Kartu Horizontal: Tahap 01, Tahap 02, Tahap 03 */
+.lapor-stepper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lapor-step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-radius: 14px;
+  border: 1px solid #E4E7EC;
+  background-color: var(--c-white);
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-step-item.active {
+  background-color: var(--c-white);
+  border: 1.5px solid #271A62;
+  box-shadow: 0 4px 14px rgba(39, 26, 98, 0.06);
+}
+
+.lapor-step-item.completed {
+  background-color: var(--c-white);
+  border-color: #D0D5DD;
+  cursor: pointer;
+}
+
+.lapor-step-item.completed:hover {
+  border-color: #271A62;
+}
+
+.lapor-step-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 0.84rem;
+  font-weight: 600;
+  background-color: #F9FAFB;
+  color: #667085;
+  border: 1px solid #D0D5DD;
+  flex-shrink: 0;
+}
+
+/* Tahap aktif menggunakan aksen kuning #FFFF6B */
+.lapor-step-item.active .lapor-step-badge {
+  background-color: #FFFF6B;
+  color: #271A62;
+  border: 1.5px solid #271A62;
+  font-weight: 700;
+}
+
+/* Tahap selesai biru #271A62 dengan centang */
+.lapor-step-item.completed .lapor-step-badge {
+  background-color: #271A62;
+  color: #FFFFFF;
+  border-color: #271A62;
+}
+
+.lapor-step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.lapor-step-num {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #667085;
+}
+
+.lapor-step-item.active .lapor-step-num {
+  color: #343446;
+}
+
+.lapor-step-label {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lapor-step-item.active .lapor-step-label,
+.lapor-step-item.completed .lapor-step-label {
+  font-weight: 600;
+  color: #303040;
+}
+
+/* --------------------------------------------------------------------------
+   Form Card Body
+   -------------------------------------------------------------------------- */
+.lapor-form-card {
+  background-color: var(--c-white);
+  border: 1px solid #E4E7EC;
+  border-radius: 16px;
+  padding: clamp(20px, 2.6vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 6px 20px rgba(39, 26, 98, 0.03);
+}
+
+.lapor-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lapor-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Judul bagian: SemiBold 600, 20–22px, biru #271A62 */
+.lapor-section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 1.45vw, 1.35rem); /* 20–22px */
+  font-weight: 600;
+  color: #271A62;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+/* Deskripsi dan petunjuk: Regular 400, 14–16px, abu #667085 */
+.lapor-section-desc {
+  font-family: var(--font-body);
+  font-size: 0.91rem; /* ~14.5px */
+  font-weight: 400;
+  color: #667085;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Search Box (Geoapify Autocomplete) + GPS Button
+   -------------------------------------------------------------------------- */
+.lapor-location-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.lapor-search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.lapor-search-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.lapor-search-icon {
+  position: absolute;
+  left: 14px;
+  color: #667085;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.lapor-search-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 40px 0 42px;
+  border-radius: 12px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #303040;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-search-input::placeholder {
+  color: #667085;
+}
+
+.lapor-search-input:focus {
+  outline: none;
+  border-color: #271A62;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.08);
+}
+
+.lapor-search-input.has-error {
+  border-color: #D92D20;
+  background-color: #FFFBFB;
+}
+
+.lapor-search-clear {
+  position: absolute;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background-color: #F2F4F7;
+  color: #343446;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.lapor-search-clear:hover {
+  background-color: #E4E7EC;
+}
+
+.lapor-search-spinner {
+  position: absolute;
+  right: 42px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E4E7EC;
+  border-top-color: #271A62;
+  border-radius: 50%;
+  animation: laporSpin 0.7s linear infinite;
+}
+
+@keyframes laporSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Autocomplete Dropdown */
+.lapor-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  background-color: var(--c-white);
+  border: 1px solid #D0D5DD;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.12);
+  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+}
+
+.lapor-autocomplete-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.lapor-autocomplete-item:hover,
+.lapor-autocomplete-item:focus-visible {
+  background-color: #F9FAFB;
+  outline: none;
+}
+
+.lapor-autocomplete-pin {
+  margin-top: 2px;
+  color: #271A62;
+  flex-shrink: 0;
+}
+
+.lapor-autocomplete-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lapor-autocomplete-primary {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #303040;
+}
+
+.lapor-autocomplete-secondary {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.lapor-autocomplete-empty {
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+/* Tombol Gunakan Lokasi Saya (SemiBold 600) */
+.lapor-gps-btn {
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-gps-btn:hover:not(:disabled),
+.lapor-gps-btn:focus-visible:not(:disabled) {
+  background-color: #F9FAFB;
+  border-color: #271A62;
+  box-shadow: 0 3px 10px rgba(39, 26, 98, 0.06);
+  outline: none;
+}
+
+.lapor-gps-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* Status / Notice Banners */
+.lapor-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.lapor-info-banner.warning,
+.lapor-info-banner.neutral {
+  background-color: #F9FAFB;
+  border: 1px solid #E4E7EC;
+  color: #343446;
+}
+
+.lapor-info-banner.error {
+  background-color: #FEF3F2;
+  border: 1px solid #FECDCA;
+  color: #B42318;
+}
+
+/* --------------------------------------------------------------------------
+   Interactive Leaflet Map Frame
+   -------------------------------------------------------------------------- */
+.lapor-map-frame {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #D0D5DD;
+  background-color: #F2F4F7;
+  z-index: 1;
+}
+
+.lapor-map-frame.has-error {
+  border-color: #D92D20;
+}
+
+.lapor-leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  font-family: var(--font-body);
+}
+
+.lapor-map-overlay-hint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 500;
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(6px);
+  border: 1px solid #E4E7EC;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: var(--font-body);
+  font-size: 0.81rem;
+  font-weight: 500;
+  color: #343446;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.06);
+}
+
+/* Metadata di bawah peta: Regular 400, 13–14px, abu #667085 */
+.lapor-map-submeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: -2px;
+}
+
+.lapor-map-region-caption {
+  font-family: var(--font-body);
+  font-size: 0.83rem; /* ~13.3px */
+  font-weight: 400;
+  color: #667085;
+}
+
+.lapor-outside-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: #B54708;
+}
+
+/* Custom TERANG Marker Pin */
+.terang-map-marker-icon {
+  background: transparent;
+  border: none;
+}
+
+.terang-pin-wrap {
+  position: relative;
+  width: 36px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 6px 10px rgba(39, 26, 98, 0.28));
+  transition: transform 150ms ease;
+}
+
+.terang-pin-wrap:hover {
+  transform: scale(1.06);
+}
+
+/* Selected Location Summary Box */
+.lapor-selected-location-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background-color: var(--c-white);
+  border: 1px solid #E4E7EC;
+  flex-wrap: wrap;
+}
+
+.lapor-selected-location-box.active {
+  background-color: var(--c-white);
+  border-color: #D0D5DD;
+}
+
+.lapor-selected-location-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.lapor-location-pin-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background-color: #F9FAFB;
+  color: #343446;
+  border: 1px solid #E4E7EC;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lapor-selected-location-box.active .lapor-location-pin-badge {
+  background-color: #FFFF6B;
+  color: #271A62;
+  border-color: #271A62;
+}
+
+.lapor-location-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Label: Medium 500, 14px, abu gelap #343446 */
+.lapor-location-label {
+  font-family: var(--font-body);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #343446;
+}
+
+/* Informasi penting (Alamat): Medium/SemiBold 500–600, abu gelap #303040 */
+.lapor-location-address {
+  font-family: var(--font-body);
+  font-size: 0.95rem; /* ~15.2px */
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.45;
+}
+
+/* Metadata & koordinat: Regular 400, 13–14px, abu #667085 */
+.lapor-location-coords {
+  font-family: var(--font-body);
+  font-size: 0.83rem; /* ~13.3px */
+  font-weight: 400;
+  color: #667085;
+}
+
+.lapor-recenter-btn {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.lapor-recenter-btn:hover {
+  background-color: #F9FAFB;
+  border-color: #271A62;
+  color: #271A62;
+}
+
+/* --------------------------------------------------------------------------
+   Pilih Jenis Kerusakan (5 Kartu Kategori)
+   -------------------------------------------------------------------------- */
+.lapor-category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.lapor-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid #E4E7EC;
+  background-color: var(--c-white);
+  color: #303040;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-category-card:hover,
+.lapor-category-card:focus-visible {
+  border-color: #271A62;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.05);
+  outline: none;
+}
+
+/* Kategori terpilih: background putih, outline biru #271A62, ikon beraksen kuning #FFFF6B */
+.lapor-category-card.selected {
+  background-color: var(--c-white);
+  border: 1.75px solid #271A62;
+  box-shadow: 0 4px 14px rgba(39, 26, 98, 0.07);
+}
+
+.lapor-category-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: #F9FAFB;
+  color: #343446;
+  border: 1px solid #EAECF0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.lapor-category-card.selected .lapor-category-icon {
+  background-color: #FFFF6B;
+  color: #271A62;
+  border-color: #271A62;
+}
+
+/* Informasi penting (Nama Kategori): SemiBold 600, abu gelap #303040 */
+.lapor-category-name {
+  font-family: var(--font-heading);
+  font-size: 0.93rem; /* ~15px */
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.3;
+}
+
+.lapor-category-card.selected .lapor-category-name {
+  color: #271A62;
+}
+
+/* Deskripsi dan petunjuk: Regular 400, 14px, abu #667085 */
+.lapor-category-desc {
+  font-family: var(--font-body);
+  font-size: 0.84rem; /* ~13.5–14px */
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.4;
+  margin-top: 3px;
+}
+
+/* Khusus Lainnya: Input tambahan tepat di bawah pilihan kategori */
+.lapor-custom-category-box {
+  margin-top: 2px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background-color: var(--c-white);
+  border: 1px solid #D0D5DD;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: laporFadeSlide 180ms ease-out;
+}
+
+@keyframes laporFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Label input: Medium 500, 14–15px, abu gelap #343446 */
+.lapor-custom-label {
+  font-family: var(--font-body);
+  font-size: 0.9rem; /* 14.4px */
+  font-weight: 500;
+  color: #343446;
+}
+
+.lapor-custom-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #303040;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-custom-input::placeholder {
+  color: #667085;
+}
+
+.lapor-custom-input:focus {
+  outline: none;
+  border-color: #271A62;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.08);
+}
+
+.lapor-custom-input.has-error {
+  border-color: #D92D20;
+  background-color: #FFFBFB;
+}
+
+/* --------------------------------------------------------------------------
+   Deteksi Laporan Serupa (Ringkas, Hanya Muncul Saat Ada Kemiripan)
+   -------------------------------------------------------------------------- */
+.lapor-similar-card {
+  border-radius: 14px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lapor-similar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lapor-similar-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lapor-similar-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.lapor-similar-heading {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #303040;
+}
+
+.lapor-similar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lapor-similar-item {
+  background-color: #F9FAFB;
+  border: 1px solid #E4E7EC;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lapor-similar-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lapor-similar-item-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lapor-similar-id {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #343446;
+  background-color: #EAECF0;
+  padding: 1px 8px;
+  border-radius: 6px;
+}
+
+.lapor-similar-distance {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.lapor-similar-item-title {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #303040;
+}
+
+.lapor-similar-item-addr {
+  font-family: var(--font-body);
+  font-size: 0.83rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.lapor-similar-status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  background-color: var(--c-white);
+  color: #343446;
+  border: 1px solid #D0D5DD;
+  white-space: nowrap;
+}
+
+.lapor-similar-note {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   Field Validation Error Message
+   -------------------------------------------------------------------------- */
+.lapor-field-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #D92D20;
+}
+
+/* --------------------------------------------------------------------------
+   Footer Actions & Buttons (Tombol: SemiBold 600)
+   -------------------------------------------------------------------------- */
+.lapor-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 1px solid #E4E7EC;
+  flex-wrap: wrap;
+}
+
+.lapor-btn-secondary {
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.lapor-btn-secondary:hover,
+.lapor-btn-secondary:focus-visible {
+  background-color: #F9FAFB;
+  border-color: #271A62;
+  color: #271A62;
+  outline: none;
+}
+
+.lapor-btn-primary {
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 12px;
+  border: 1.5px solid #271A62;
+  background-color: #FFFF6B;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-btn-primary:hover,
+.lapor-btn-primary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(39, 26, 98, 0.14);
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Step 2 — Foto & Keterangan (45% Foto / 55% Keterangan)
+   -------------------------------------------------------------------------- */
+.lapor-hidden-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.lapor-step2-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  gap: clamp(28px, 3.8vw, 48px);
+  align-items: start;
+}
+
+.lapor-step2-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* Metadata: Regular 400, 13–14px, abu #667085 */
+.lapor-photo-counter {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background-color: #F9FAFB;
+  border: 1px solid #E4E7EC;
+  font-family: var(--font-body);
+  font-size: 0.82rem; /* ~13.1px */
+  font-weight: 400;
+  color: #667085;
+  white-space: nowrap;
+}
+
+.lapor-photo-counter.has-photos {
+  background-color: var(--c-white);
+  border-color: #D0D5DD;
+  color: #343446;
+  font-weight: 500;
+}
+
+/* Area Upload Besar (sebelum foto pertama dipilih) */
+.lapor-upload-dropzone {
+  min-height: 270px;
+  border-radius: 16px;
+  border: 1.5px dashed #D0D5DD;
+  background-color: var(--c-white);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-upload-dropzone:hover,
+.lapor-upload-dropzone:focus-visible,
+.lapor-upload-dropzone.dragging {
+  border-color: #271A62;
+  box-shadow: 0 6px 20px rgba(39, 26, 98, 0.05);
+  outline: none;
+}
+
+.lapor-upload-dropzone.has-error {
+  border-color: #D92D20;
+}
+
+.lapor-dropzone-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background-color: #F9FAFB;
+  border: 1px solid #E4E7EC;
+  color: #343446;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lapor-upload-dropzone:hover .lapor-dropzone-icon,
+.lapor-upload-dropzone.dragging .lapor-dropzone-icon {
+  background-color: #FFFF6B;
+  color: #271A62;
+  border-color: #271A62;
+}
+
+/* Informasi penting: Medium/SemiBold 500–600, abu gelap #303040 */
+.lapor-dropzone-title {
+  font-family: var(--font-heading);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #303040;
+}
+
+/* Tombol: SemiBold 600 */
+.lapor-dropzone-btn {
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 12px;
+  border: 1.5px solid #271A62;
+  background-color: #FFFF6B;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 180ms ease;
+}
+
+.lapor-dropzone-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.1);
+}
+
+/* Metadata: Regular 400, 13–14px, abu #667085 */
+.lapor-dropzone-hint {
+  font-family: var(--font-body);
+  font-size: 0.84rem; /* ~13.5px */
+  font-weight: 400;
+  color: #667085;
+}
+
+/* 3 Slot Foto Horizontal (muncul setelah foto pertama dipilih) */
+.lapor-photo-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.lapor-photo-slot {
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 196px;
+}
+
+.lapor-photo-slot.filled {
+  border: 1px solid #E4E7EC;
+  background-color: var(--c-white);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.04);
+}
+
+.lapor-photo-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 146px;
+  background-color: #F2F4F7;
+  overflow: hidden;
+}
+
+.lapor-photo-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lapor-photo-remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-white);
+  background-color: rgba(39, 26, 98, 0.85);
+  color: var(--c-white);
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 150ms ease;
+}
+
+.lapor-photo-remove-btn:hover {
+  background-color: #D92D20;
+  transform: scale(1.06);
+}
+
+.lapor-photo-slot-footer {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background-color: var(--c-white);
+  border-top: 1px solid #EAECF0;
+  flex: 1;
+}
+
+.lapor-photo-filename {
+  font-family: var(--font-body);
+  font-size: 0.81rem; /* 13px */
+  font-weight: 400;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.lapor-photo-replace-btn {
+  padding: 4px 9px;
+  border-radius: 8px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.lapor-photo-replace-btn:hover {
+  background-color: #F9FAFB;
+  border-color: #271A62;
+  color: #271A62;
+}
+
+/* Slot Kosong: "+ Tambah Foto" */
+.lapor-photo-slot.empty {
+  border: 1.5px dashed #D0D5DD;
+  background-color: var(--c-white);
+  color: #343446;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-photo-slot.empty:hover,
+.lapor-photo-slot.empty:focus-visible {
+  border-color: #271A62;
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.05);
+  outline: none;
+}
+
+.lapor-slot-plus-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #F9FAFB;
+  border: 1px solid #D0D5DD;
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.lapor-photo-slot.empty:hover .lapor-slot-plus-icon {
+  background-color: #FFFF6B;
+  border-color: #271A62;
+  color: #271A62;
+}
+
+.lapor-slot-add-text {
+  font-family: var(--font-heading);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #343446;
+}
+
+/* Textarea Deskripsi Kerusakan */
+.lapor-textarea {
+  width: 100%;
+  min-height: 152px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  font-family: var(--font-body);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+  line-height: 1.55;
+  color: #303040;
+  resize: vertical;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-textarea::placeholder {
+  color: #667085;
+}
+
+.lapor-textarea:focus {
+  outline: none;
+  border-color: #271A62;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.08);
+}
+
+.lapor-textarea.has-error {
+  border-color: #D92D20;
+}
+
+/* Dampak Kerusakan Single-Selection Buttons (Ya / Tidak / Tidak Yakin) */
+.lapor-impact-section {
+  gap: 12px;
+}
+
+.lapor-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.lapor-impact-btn {
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  color: #303040;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, color 180ms ease;
+}
+
+.lapor-impact-btn:hover,
+.lapor-impact-btn:focus-visible {
+  border-color: #271A62;
+  outline: none;
+}
+
+.lapor-impact-btn.selected {
+  background-color: var(--c-white);
+  border: 1.75px solid #271A62;
+  color: #271A62;
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.07);
+}
+
+.lapor-impact-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #98A2B3;
+  background-color: var(--c-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.lapor-impact-btn.selected .lapor-impact-indicator {
+  border-color: #271A62;
+  background-color: #FFFF6B;
+}
+
+.lapor-impact-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #271A62;
+}
+
+.lapor-impact-helper {
+  font-family: var(--font-body);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Step 3 — Tinjau & Kirim (Layout 2 Kolom, Bersih Tanpa Nested Card Berlebih)
+   -------------------------------------------------------------------------- */
+.lapor-step3-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+  gap: clamp(24px, 3vw, 36px);
+  align-items: start;
+}
+
+.lapor-step3-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.lapor-review-card {
+  background-color: var(--c-white);
+  border: 1px solid #E4E7EC;
+  border-radius: 16px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.lapor-review-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #EAECF0;
+}
+
+/* Judul bagian di Step 3: SemiBold 600, 20–22px, biru #271A62 */
+.lapor-review-card-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 1.4vw, 1.32rem); /* ~20–21px */
+  font-weight: 600;
+  color: #271A62;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+/* Deskripsi dan petunjuk: Regular 400, 14–16px, abu #667085 */
+.lapor-review-card-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.9rem; /* 14.4px */
+  font-weight: 400;
+  color: #667085;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* Tombol aksi kecil berikon pensil: "Ubah Lokasi" & "Ubah Foto" (SemiBold 600) */
+.lapor-review-edit-btn {
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  border: 1px solid #D0D5DD;
+  background-color: var(--c-white);
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 0.84rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.lapor-review-edit-btn:hover,
+.lapor-review-edit-btn:focus-visible {
+  background-color: #F9FAFB;
+  border-color: #271A62;
+  color: #271A62;
+  box-shadow: 0 2px 8px rgba(39, 26, 98, 0.08);
+  outline: none;
+}
+
+/* Mini Map Leaflet pada Step 3 */
+.lapor-step3-minimap-wrap {
+  position: relative;
+  width: 100%;
+  height: 186px;
+  border-radius: 14px;
+  border: 1px solid #E4E7EC;
+  overflow: hidden;
+  background-color: #F2F4F7;
+}
+
+.lapor-step3-minimap {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.lapor-step3-minimap-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.lapor-review-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lapor-review-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Label pendukung: Medium 500, 14px, abu gelap #343446 */
+.lapor-review-detail-label {
+  font-family: var(--font-body);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 500;
+  color: #343446;
+}
+
+/* Alamat lengkap lebih menonjol: SemiBold 600, 16px, abu gelap #303040 */
+.lapor-review-address-primary {
+  font-family: var(--font-body);
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Informasi penting umum: Medium 500, 15px, abu gelap #303040 */
+.lapor-review-detail-value {
+  font-family: var(--font-body);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 500;
+  color: #303040;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Koordinat & metadata: Regular 400, 13–14px, abu #667085 */
+.lapor-coord-mono {
+  font-family: var(--font-body);
+  font-size: 0.84rem; /* ~13.5px */
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.4;
+}
+
+.lapor-review-category-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Kategori kerusakan dalam badge kuning #FFFF6B dengan teks biru tua #271A62 */
+.lapor-review-category-pill {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.lapor-review-custom-category {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #303040;
+}
+
+/* Foto Bukti pada Step 3 */
+.lapor-step3-photo-preview-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.lapor-step3-photo-card {
+  border: 1px solid #E4E7EC;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--c-white);
+  display: flex;
+  flex-direction: column;
+}
+
+.lapor-step3-photo-img {
+  width: 100%;
+  height: 118px;
+  object-fit: cover;
+  display: block;
+}
+
+.lapor-step3-photo-caption {
+  padding: 7px 10px;
+  font-family: var(--font-body);
+  font-size: 0.81rem; /* 13px */
+  font-weight: 400;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Deskripsi Kerusakan di Step 3 (bersih tanpa nested box berat) */
+.lapor-review-description-text {
+  font-family: var(--font-body);
+  font-size: 0.9375rem; /* 15px */
+  font-weight: 400;
+  line-height: 1.6;
+  color: #303040;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Jawaban risiko di Step 3 (netral & jelas, tidak mendominasi kuning) */
+.lapor-review-impact-badge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background-color: #F9FAFB;
+  border: 1px solid #D0D5DD;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #303040;
+}
+
+/* Tampilkan identitas pelapor? (Anonim vs Tampilkan nama saya) */
+.lapor-identity-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lapor-identity-option {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #E4E7EC;
+  background-color: var(--c-white);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.lapor-identity-option:hover,
+.lapor-identity-option:focus-visible {
+  border-color: #271A62;
+  outline: none;
+}
+
+.lapor-identity-option.selected {
+  border: 1.75px solid #271A62;
+  background-color: var(--c-white);
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.06);
+}
+
+.lapor-identity-radio {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #98A2B3;
+  background-color: var(--c-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.lapor-identity-option.selected .lapor-identity-radio {
+  border-color: #271A62;
+  background-color: #FFFF6B;
+}
+
+.lapor-identity-radio-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #271A62;
+}
+
+.lapor-identity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.lapor-identity-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Informasi penting: SemiBold 600, abu gelap #303040 */
+.lapor-identity-title {
+  font-family: var(--font-heading);
+  font-size: 0.94rem; /* 15px */
+  font-weight: 600;
+  color: #303040;
+}
+
+.lapor-identity-default-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #F2F4F7;
+  border: 1px solid #E4E7EC;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+/* Deskripsi dan petunjuk: Regular 400, 14px, abu #667085 */
+.lapor-identity-desc {
+  font-family: var(--font-body);
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.45;
+}
+
+/* Pratinjau satu baris sederhana tanpa nested card berat */
+.lapor-identity-preview-simple {
+  padding-top: 12px;
+  border-top: 1px solid #EAECF0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lapor-identity-preview-line {
+  font-family: var(--font-body);
+  font-size: 0.9rem; /* 14.4px */
+  font-weight: 400;
+  color: #343446;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.lapor-identity-preview-value {
+  font-weight: 600;
+  color: #303040;
+}
+
+.lapor-identity-note {
+  font-family: var(--font-body);
+  font-size: 0.83rem; /* ~13.3px */
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Kalimat singkat sebelum tombol Kirim Laporan */
+.lapor-step3-footer-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lapor-submit-inline-note {
+  font-family: var(--font-body);
+  font-size: 0.9rem; /* 14.4px */
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Tampilan Berhasil Kirim
+   -------------------------------------------------------------------------- */
+.lapor-success-card {
+  gap: 22px;
+}
+
+.lapor-success-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.lapor-success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background-color: #FFFF6B;
+  border: 1.5px solid #271A62;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lapor-success-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lapor-success-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lapor-success-id-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.lapor-success-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: var(--c-white);
+  border: 1px solid #D0D5DD;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+.lapor-success-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.lapor-success-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+}
+
+.lapor-success-recap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid #E4E7EC;
+  background-color: #F9FAFB;
+}
+
+/* Cancel Confirmation Modal */
+.lapor-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background-color: rgba(25, 16, 64, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.lapor-confirm-dialog {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--c-white);
+  border: 1px solid #D0D5DD;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 48px rgba(16, 24, 40, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lapor-confirm-title {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.lapor-confirm-desc {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+}
+
+.lapor-confirm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Breakpoints (Desktop 1440px, Tablet, Mobile 390px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 960px) {
+  .lapor-category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lapor-step2-grid,
+  .lapor-step3-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 720px) {
+  .lapor-stepper {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .lapor-location-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .lapor-gps-btn {
+    width: 100%;
+  }
+
+  .lapor-category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lapor-map-frame {
+    height: 260px;
+  }
+
+  .lapor-step3-photo-preview-row,
+  .lapor-success-recap-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .lapor-main {
+    padding: 16px 14px 44px;
+    gap: 16px;
+  }
+
+  .lapor-header-card,
+  .lapor-form-card,
+  .lapor-review-card {
+    padding: 16px;
+  }
+
+  .lapor-review-card-header {
+    flex-wrap: wrap;
+  }
+
+  .lapor-category-grid,
+  .lapor-photo-slots-grid,
+  .lapor-impact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lapor-footer-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .lapor-btn-secondary,
+  .lapor-btn-primary {
+    width: 100%;
+  }
+}

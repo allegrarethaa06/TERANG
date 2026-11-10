@@ -1,0 +1,858 @@
+/* ==========================================================================
+   TERANG — Halaman Detail Laporan (/laporan/:reportId)
+   Design System: Primary Yellow #FFFF6B | Dark Blue #271A62 | White #FFFFFF
+   Typography:
+   - Judul utama: Plus Jakarta Sans, Bold 700, 30–32px, #271A62
+   - Judul section: Plus Jakarta Sans, SemiBold 600, 20–22px, #271A62
+   - Isi utama: Inter Regular/Medium, #344054
+   - Label: Inter Medium 500, #343446
+   - Metadata: Inter Regular 400, 13–14px, #667085
+   - Border: #E5E7EB | Rounded: 14–16px
+   - Whitespace antarbagian: 24–32px
+   ========================================================================== */
+
+.detail-laporan-page {
+  min-height: 100svh;
+  background-color: #FAFAFC;
+  color: #344054;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-laporan-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 32px clamp(16px, 4vw, 40px) 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px; /* Whitespace 24-32px antarbagian */
+}
+
+/* --------------------------------------------------------------------------
+   Top Navigation Bar (Satu Tombol "Kembali" Dinamis + Simulasi Pill)
+   -------------------------------------------------------------------------- */
+.detail-laporan-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.detail-laporan-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #271A62;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 11px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.detail-laporan-back-btn:hover,
+.detail-laporan-back-btn:focus-visible {
+  background-color: #FFFF6B;
+  border-color: #271A62;
+  transform: translateX(-2px);
+  outline: none;
+}
+
+.detail-laporan-simulasi-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background-color: #FFFFD6;
+  border: 1px solid #EEEE7A;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #271A62;
+}
+
+/* --------------------------------------------------------------------------
+   Header Card (Judul Utama Fokus, Metadata Terpisah, Status Badge)
+   -------------------------------------------------------------------------- */
+.detail-laporan-header-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+.detail-laporan-header-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Judul Utama: Bold 700, 30–32px, #271A62 */
+.detail-laporan-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.65rem, 2.3vw, 1.95rem); /* 30-32px */
+  font-weight: 700;
+  color: #271A62;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Metadata Bar: ID, Kategori, Tanggal, Pelapor */
+.detail-laporan-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.86rem; /* 13-14px */
+  color: #667085;
+}
+
+.detail-laporan-id-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: #F4F3FF;
+  border: 1px solid #DDD6FE;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #271A62;
+}
+
+.detail-laporan-cat-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.detail-laporan-meta-dot {
+  color: #CBD5E1;
+}
+
+.detail-laporan-meta-text {
+  color: #667085;
+  font-weight: 400;
+}
+
+/* Status Penanganan Badge */
+.detail-laporan-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.detail-laporan-status-pill.status-pending {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.detail-laporan-status-pill.status-verified {
+  background-color: #F4F3FF;
+  color: #4338CA;
+  border: 1px solid #DDD6FE;
+}
+
+.detail-laporan-status-pill.status-progress {
+  background-color: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.detail-laporan-status-pill.status-confirm {
+  background-color: #ECFEFF;
+  color: #0E7490;
+  border: 1px solid #A5F3FC;
+}
+
+.detail-laporan-status-pill.status-done {
+  background-color: #ECFDF3;
+  color: #027A48;
+  border: 1px solid #A6F4C5;
+}
+
+.detail-laporan-status-pill.status-closed {
+  background-color: #F2F4F7;
+  color: #667085;
+  border: 1px solid #D0D5DD;
+}
+
+/* --------------------------------------------------------------------------
+   Layout Dua Kolom Seimbang (Lokasi/Peta vs Foto/Deskripsi/Bahaya)
+   -------------------------------------------------------------------------- */
+.detail-laporan-two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.detail-laporan-card-block {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+.detail-laporan-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F2F4F7;
+}
+
+.detail-laporan-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem; /* 18-20px SemiBold */
+  font-weight: 600;
+  color: #271A62;
+  margin: 0;
+}
+
+/* Detail Lokasi */
+.detail-laporan-address-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-laporan-address-text {
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: #303040;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.detail-laporan-coords-text {
+  font-size: 0.82rem;
+  color: #667085;
+  margin: 0;
+}
+
+/* Mini Map Leaflet */
+.detail-laporan-map-wrap {
+  width: 100%;
+  height: 220px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  overflow: hidden;
+  background-color: #F3F4F6;
+  position: relative;
+}
+
+.detail-laporan-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Pertanyaan Potensi Bahaya */
+.detail-laporan-risk-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #F2F4F7;
+}
+
+.detail-laporan-risk-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+.detail-laporan-risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.detail-laporan-risk-badge.risk-ya {
+  background-color: #FEF3F2;
+  color: #B42318;
+  border: 1px solid #FECDCA;
+}
+
+.detail-laporan-risk-badge.risk-tidak {
+  background-color: #ECFDF3;
+  color: #027A48;
+  border: 1px solid #A6F4C5;
+}
+
+.detail-laporan-risk-badge.risk-yakin {
+  background-color: #F8F9FC;
+  color: #475467;
+  border: 1px solid #D0D5DD;
+}
+
+/* Galeri Foto Bukti (Dapat Diklik untuk Lightbox) */
+.detail-laporan-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.detail-laporan-photo-btn {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  overflow: hidden;
+  background-color: #F9FAFB;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all 160ms ease;
+  text-align: left;
+}
+
+.detail-laporan-photo-btn:hover {
+  border-color: #271A62;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.1);
+}
+
+.detail-laporan-photo-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-laporan-photo-hint {
+  padding: 6px 10px;
+  background-color: #FFFFFF;
+  font-size: 0.76rem;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Deskripsi Kerusakan */
+.detail-laporan-desc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #F2F4F7;
+}
+
+.detail-laporan-desc-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+.detail-laporan-desc-text {
+  font-size: 0.92rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #344054;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   ALASAN PRIORITAS AWAL — CARD TERPISAH DENGAN BACKGROUND #FFFEE8
+   -------------------------------------------------------------------------- */
+.detail-laporan-priority-card {
+  background-color: #FFFEE8; /* Kuning sangat lembut */
+  border: 1px solid #F3F1BF;
+  border-radius: 16px;
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.02);
+}
+
+.detail-laporan-priority-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.detail-laporan-priority-verified {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #271A62;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 3px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(220, 215, 160, 0.6);
+}
+
+.detail-laporan-priority-disclaimer {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #555566;
+  margin: 0;
+}
+
+.detail-laporan-priority-summary {
+  font-size: 0.96rem;
+  font-weight: 500;
+  color: #303040;
+  margin: 0;
+}
+
+.detail-laporan-reasons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.detail-laporan-reason-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(225, 220, 165, 0.5);
+}
+
+.detail-laporan-reason-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #271A62;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.detail-laporan-reason-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.4;
+}
+
+.detail-laporan-reason-desc {
+  margin: 3px 0 0;
+  font-size: 0.85rem;
+  color: #667085;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   RADAR RUSAK LAGI (Hanya jika laporan terindikasi berulang)
+   -------------------------------------------------------------------------- */
+.detail-laporan-radar-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid #271A62;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: inset 4px 0 0 #FFFF6B, 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.detail-laporan-radar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #271A62;
+}
+
+.detail-laporan-radar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background-color: #F8F9FA;
+  border: 1px solid #E5E7EB;
+}
+
+.detail-laporan-radar-cell-label {
+  font-size: 0.78rem;
+  color: #667085;
+  margin: 0 0 2px;
+}
+
+.detail-laporan-radar-cell-val {
+  font-family: var(--font-heading);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #303040;
+  margin: 0;
+}
+
+.detail-laporan-radar-desc {
+  font-size: 0.9rem;
+  color: #344054;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   JEJAK KEPUTUSAN (Timeline Rapi & Jelas)
+   -------------------------------------------------------------------------- */
+.detail-laporan-trail-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 26px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+.detail-laporan-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-laporan-timeline-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 110px 22px 1fr;
+  column-gap: 14px;
+  padding-bottom: 22px; /* 20-24px vertical distance */
+}
+
+.detail-laporan-timeline-step:last-child {
+  padding-bottom: 0;
+}
+
+.detail-laporan-timeline-step::before {
+  content: '';
+  position: absolute;
+  left: calc(110px + 14px + 10px);
+  top: 14px;
+  bottom: -2px;
+  width: 2px;
+  background-color: #E2E1EC;
+}
+
+.detail-laporan-timeline-step:last-child::before {
+  display: none;
+}
+
+.detail-laporan-step-time {
+  padding-top: 1px;
+  font-size: 0.82rem;
+  color: #667085;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.detail-laporan-step-dot {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  margin-top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 2px solid #A8A3CC;
+}
+
+.detail-laporan-timeline-step.current .detail-laporan-step-dot {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  background-color: #FFFF6B;
+  border: 3px solid #271A62;
+  box-shadow: 0 0 0 4px rgba(255, 255, 107, 0.45);
+}
+
+.detail-laporan-step-content {
+  flex: 1;
+}
+
+.detail-laporan-step-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.4;
+}
+
+.detail-laporan-timeline-step.current .detail-laporan-step-title {
+  color: #271A62;
+  font-weight: 700;
+}
+
+.detail-laporan-step-current-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #FFFFD6;
+  border: 1px solid #EEEE7A;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.detail-laporan-step-note {
+  margin: 4px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #667085;
+}
+
+/* --------------------------------------------------------------------------
+   JEJAK ANGGARAN
+   -------------------------------------------------------------------------- */
+.detail-laporan-budget-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+.detail-laporan-budget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.detail-laporan-budget-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: #F2F4F7;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #475467;
+  border: 1px solid #E5E7EB;
+}
+
+.detail-laporan-budget-box {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background-color: #F8F9FA;
+  border: 1px solid #E5E7EB;
+}
+
+.detail-laporan-budget-text {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #303040;
+}
+
+.detail-laporan-budget-note {
+  margin: 0;
+  font-size: 0.83rem;
+  color: #667085;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   PHOTO LIGHTBOX MODAL (Pratinjau Foto Asli Diperbesar)
+   -------------------------------------------------------------------------- */
+.detail-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: detailFadeIn 160ms ease-out;
+}
+
+.detail-lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-lightbox-img {
+  max-width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.detail-lightbox-caption {
+  font-size: 0.9rem;
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0;
+}
+
+.detail-lightbox-close {
+  position: absolute;
+  top: -42px;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.detail-lightbox-close:hover {
+  background-color: #FFFF6B;
+  color: #271A62;
+}
+
+@keyframes detailFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Design (Desktop 1440px / Laptop 1366px / Mobile 390px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .detail-laporan-two-col {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .detail-laporan-reasons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-laporan-radar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-laporan-main {
+    padding-top: 20px;
+    padding-bottom: 48px;
+    gap: 20px;
+  }
+
+  .detail-laporan-header-card {
+    flex-direction: column;
+    padding: 20px 18px;
+    gap: 16px;
+  }
+
+  .detail-laporan-card-block,
+  .detail-laporan-priority-card,
+  .detail-laporan-trail-card,
+  .detail-laporan-budget-card,
+  .detail-laporan-radar-card {
+    padding: 20px 18px;
+  }
+
+  .detail-laporan-timeline-step {
+    grid-template-columns: 20px 1fr;
+    column-gap: 12px;
+  }
+
+  .detail-laporan-timeline-step::before {
+    left: 9px;
+  }
+
+  .detail-laporan-step-time {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.78rem;
+    margin-bottom: 2px;
+  }
+
+  .detail-laporan-step-dot {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .detail-laporan-step-content {
+    grid-column: 2;
+  }
+}

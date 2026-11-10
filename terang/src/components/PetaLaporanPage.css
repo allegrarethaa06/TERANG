@@ -1,0 +1,1135 @@
+/* ==========================================================================
+   TERANG — Halaman Peta Laporan Warga (/peta-laporan)
+   Design System: Primary Yellow #FFFF6B | Dark Blue #271A62 | White #FFFFFF
+   Typography Hierarchy:
+   - Heading utama: Plus Jakarta Sans, Bold 700, 30–32px, #271A62
+   - Judul section: Plus Jakarta Sans, SemiBold 600, 20–22px, #271A62
+   - Judul kartu: Plus Jakarta Sans, SemiBold 600, 16–18px, #303040
+   - Label/filter: Inter, Medium 500, 14px, #343446
+   - Deskripsi: Inter, Regular 400, 14–16px, #344054
+   - Metadata: Inter, Regular 400, 13–14px, #667085
+   - Border: #E6E8EC | Rounded: 14–16px
+   ========================================================================== */
+
+.peta-laporan-page {
+  min-height: 100svh;
+  height: 100svh;
+  width: 100%;
+  background-color: #FFFFFF;
+  color: #344054;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-body, 'Inter', sans-serif);
+}
+
+.peta-navbar {
+  flex-shrink: 0;
+  z-index: 1000;
+}
+
+/* Public Navbar Auth Buttons when visitor is not logged in */
+.peta-public-auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.peta-auth-link {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #271A62;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: background-color 160ms ease;
+}
+
+.peta-auth-link:hover,
+.peta-auth-link:focus-visible {
+  background-color: #F3F4F6;
+  outline: none;
+}
+
+.peta-auth-cta {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #271A62;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.peta-auth-cta:hover,
+.peta-auth-cta:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.1);
+  outline: none;
+}
+
+/* Mobile View Switcher ("Daftar" vs "Peta") - hidden on desktop */
+.peta-mobile-tabs {
+  display: none;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E6E8EC;
+  padding: 8px 16px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.peta-mobile-tab-btn {
+  flex: 1;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #E6E8EC;
+  background-color: #FFFFFF;
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.peta-mobile-tab-btn.active {
+  background-color: #FFFF6B;
+  border-color: #271A62;
+  color: #271A62;
+}
+
+.peta-mobile-tab-btn:focus-visible {
+  outline: 2px solid #271A62;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Two-Column Workspace (Sidebar 36–38%, Peta Mengisi Sisa Layar di Desktop)
+   -------------------------------------------------------------------------- */
+.peta-workspace {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(430px, 37%) minmax(0, 63%);
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar Kiri: Pencarian, Filter, & Daftar Kartu Laporan (Padding 24px)
+   -------------------------------------------------------------------------- */
+.peta-sidebar {
+  height: 100%;
+  min-height: 0;
+  background-color: #FFFFFF;
+  border-right: 1px solid #E6E8EC;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.peta-sidebar-top {
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid #E6E8EC;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+  background-color: #FFFFFF;
+}
+
+.peta-sidebar-title-row {
+  margin-bottom: 2px;
+}
+
+/* Judul utama: Bold 700, #271A62 */
+.peta-page-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem; /* ~24px */
+  font-weight: 700;
+  color: #271A62;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0 0 6px;
+}
+
+/* Deskripsi: Regular 400, #667085 */
+.peta-page-subtitle {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Search Bar: Full width, tinggi 48px, padding lega */
+.peta-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.peta-search-icon {
+  position: absolute;
+  left: 16px;
+  color: #667085;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.peta-search-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 40px 0 46px;
+  border-radius: 12px;
+  border: 1px solid #E6E8EC;
+  background-color: #FFFFFF;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #344054;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.peta-search-input::placeholder {
+  color: #98A2B3;
+}
+
+.peta-search-input:focus {
+  outline: none;
+  border-color: #271A62;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.08);
+}
+
+.peta-search-clear {
+  position: absolute;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background-color: #F3F4F6;
+  color: #667085;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.peta-search-clear:hover {
+  background-color: #E5E7EB;
+  color: #303040;
+}
+
+/* Mobile filter toggle bar (hidden on desktop) */
+.peta-mobile-filter-bar {
+  display: none;
+}
+
+.peta-mobile-filter-toggle {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #E6E8EC;
+  background-color: #F8F9FA;
+  color: #343446;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.peta-mobile-filter-toggle.expanded {
+  background-color: #EFF1F5;
+  border-color: #CBD5E1;
+}
+
+.peta-mobile-filter-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #271A62;
+  background-color: #FFFF6B;
+  padding: 1px 6px;
+  border-radius: 999px;
+  empty-cells: hide;
+}
+
+.peta-mobile-filter-badge:empty {
+  display: none;
+}
+
+/* Collapsible container on mobile, always visible on desktop */
+.peta-filters-collapsible {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Filter Kategori Chips: Tidak ada horizontal scrollbar pada desktop; wrap maksimal 2 baris */
+.peta-category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.peta-cat-pill {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid #E6E8EC;
+  background-color: #FFFFFF;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem; /* 13-14px */
+  font-weight: 500;
+  color: #343446;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.peta-cat-pill:hover {
+  border-color: #271A62;
+  background-color: #FAFAFA;
+}
+
+.peta-cat-pill:focus-visible {
+  outline: 2px solid #271A62;
+  outline-offset: 2px;
+}
+
+.peta-cat-pill.active {
+  background-color: #271A62;
+  border-color: #271A62;
+  color: #FFFFFF;
+}
+
+/* Filter Status & Prioritas: Sejajar dengan gap 12px serta tinggi konsisten */
+.peta-select-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.peta-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Label/filter: Medium 500, 14px, #343446 */
+.peta-filter-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem; /* 13-14px */
+  font-weight: 500;
+  color: #343446;
+}
+
+.peta-filter-select {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #E6E8EC;
+  background-color: #FFFFFF;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #343446;
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.peta-filter-select:focus {
+  outline: none;
+  border-color: #271A62;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.08);
+}
+
+/* Results Count & Reset Filter Bar */
+.peta-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.peta-results-count {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.83rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.peta-results-count strong {
+  font-weight: 600;
+  color: #303040;
+}
+
+.peta-reset-filter-btn {
+  border: none;
+  background: transparent;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: #271A62;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+
+.peta-reset-filter-btn:hover,
+.peta-reset-filter-btn:focus-visible {
+  background-color: #F3F4F6;
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Report Cards List (Padding 24px, Gap 14–16px)
+   -------------------------------------------------------------------------- */
+.peta-report-list-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 24px 32px;
+  background-color: #FFFFFF;
+}
+
+.peta-report-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Gap antarkartu 14–16px */
+}
+
+/* Kartu Laporan: Rounded 16px, Padding 18–20px */
+.peta-report-card {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid #E6E8EC;
+  background-color: #FFFFFF;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 160ms ease;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+}
+
+.peta-report-card:hover {
+  border-color: #CBD5E1;
+  background-color: #FAFAFB;
+  box-shadow: 0 3px 10px rgba(16, 24, 40, 0.05);
+}
+
+.peta-report-card:focus-visible {
+  outline: 2px solid #271A62;
+  outline-offset: 2px;
+}
+
+/* Kartu terpilih: border biru halus dan aksen kuning kecil */
+.peta-report-card.selected {
+  border: 1.5px solid #271A62;
+  background-color: #FFFFFF;
+  box-shadow: inset 4px 0 0 #FFFF6B, 0 4px 14px rgba(39, 26, 98, 0.08);
+}
+
+.peta-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.peta-card-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #E6E8EC;
+  background-color: #F3F4F6;
+  flex-shrink: 0;
+}
+
+.peta-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* 1. Judul Laporan: SemiBold 600, 16–18px, #303040 */
+.peta-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.02rem; /* ~16-17px */
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.36;
+  margin: 0;
+}
+
+.peta-report-card.selected .peta-card-title {
+  color: #271A62;
+}
+
+/* 2. Status Penanganan & Kategori Badges */
+.peta-card-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Status Penanganan Badges */
+.peta-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.peta-status-badge.status-pending {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.peta-status-badge.status-verified {
+  background-color: #F4F3FF;
+  color: #4338CA;
+  border: 1px solid #DDD6FE;
+}
+
+.peta-status-badge.status-progress {
+  background-color: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.peta-status-badge.status-confirm {
+  background-color: #ECFEFF;
+  color: #0E7490;
+  border: 1px solid #A5F3FC;
+}
+
+.peta-status-badge.status-done {
+  background-color: #ECFDF3;
+  color: #027A48;
+  border: 1px solid #A6F4C5;
+}
+
+/* Kategori: Label Sekunder (Medium 500, #343446) */
+.peta-category-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+/* Badge "Diduga Rusak Lagi" hanya jika relevan */
+.peta-recurring-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+/* 3. Lokasi: Regular 400, #667085, Maksimal 2 Baris */
+.peta-card-location {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 4. ID / Tanggal & Aksi ("Titik Peta" & "Lihat Detail") */
+.peta-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.peta-card-meta {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.peta-card-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.peta-card-map-action {
+  border: 1px solid #E6E8EC;
+  background-color: #FFFFFF;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #343446;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.peta-card-map-action:hover {
+  border-color: #271A62;
+  background-color: #F8F9FA;
+  color: #271A62;
+}
+
+.peta-card-detail-action {
+  font-family: var(--font-heading);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #271A62;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  padding: 5px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 160ms ease;
+}
+
+.peta-card-detail-action:hover {
+  background-color: #F5F550;
+  transform: translateY(-1px);
+}
+
+/* Empty State saat filter tidak menghasilkan laporan */
+.peta-empty-state {
+  padding: 44px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.peta-empty-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #271A62;
+  margin: 0;
+}
+
+.peta-empty-desc {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: #667085;
+  max-width: 36ch;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.peta-empty-reset-btn {
+  margin-top: 6px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: 1.5px solid #271A62;
+  background-color: #FFFF6B;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.peta-empty-reset-btn:hover {
+  background-color: #F5F550;
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Area Kanan: Peta Interaktif React Leaflet (Luas & Mengisi Tinggi Layar)
+   -------------------------------------------------------------------------- */
+.peta-map-section {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background-color: #F3F4F6;
+  overflow: hidden;
+}
+
+.peta-leaflet-canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  font-family: var(--font-body, 'Inter', sans-serif);
+}
+
+/* Top Floating Bar di atas Peta: Wilayah Peta & Data Simulasi */
+.peta-map-top-bar {
+  position: absolute;
+  top: 16px;
+  left: 56px;
+  right: 64px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  pointer-events: none;
+}
+
+.peta-region-pill {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.96);
+  border: 1px solid #E6E8EC;
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.08);
+}
+
+.peta-region-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #271A62;
+}
+
+.peta-region-text {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+.peta-recenter-map-btn {
+  pointer-events: auto;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #E6E8EC;
+  background-color: rgba(255, 255, 255, 0.96);
+  color: #343446;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.81rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(16, 24, 40, 0.08);
+  transition: all 160ms ease;
+}
+
+.peta-recenter-map-btn:hover,
+.peta-recenter-map-btn:focus-visible {
+  border-color: #271A62;
+  color: #271A62;
+  outline: none;
+}
+
+.peta-simulasi-disclaimer {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.94);
+  border: 1px solid #E6E8EC;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.peta-map-loading,
+.peta-map-error-banner {
+  position: absolute;
+  top: 68px;
+  left: 56px;
+  z-index: 500;
+  background-color: rgba(255, 255, 255, 0.96);
+  border: 1px solid #E6E8EC;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.85rem;
+  color: #343446;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+}
+
+/* Custom Map Markers */
+.peta-custom-marker-wrap {
+  background: transparent;
+  border: none;
+}
+
+.peta-marker-pin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 5px 10px rgba(39, 26, 98, 0.28));
+  transition: transform 160ms ease;
+}
+
+.peta-marker-pin:hover,
+.peta-marker-pin.is-selected {
+  transform: scale(1.14) translateY(-2px);
+}
+
+.peta-marker-pin.is-selected::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px rgba(39, 26, 98, 0.22);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Popup Detail Peta
+   -------------------------------------------------------------------------- */
+.peta-leaflet-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 16px;
+  border: 1px solid #E6E8EC;
+  box-shadow: 0 12px 28px rgba(16, 24, 40, 0.16);
+  overflow: hidden;
+}
+
+.peta-leaflet-popup .leaflet-popup-content {
+  margin: 0;
+  width: 290px !important;
+}
+
+.peta-popup-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF;
+}
+
+.peta-popup-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  background-color: #F3F4F6;
+  overflow: hidden;
+}
+
+.peta-popup-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.peta-status-badge.popup-status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.14);
+}
+
+.peta-popup-sim-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  background: rgba(16, 24, 40, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.peta-popup-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.peta-popup-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+}
+
+.peta-popup-id {
+  font-weight: 400;
+  color: #667085;
+}
+
+.peta-popup-dot {
+  color: #CBD5E1;
+}
+
+.peta-popup-category {
+  font-weight: 500;
+  color: #343446;
+}
+
+.peta-popup-recurring {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.peta-popup-title {
+  font-family: var(--font-heading);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.peta-popup-address {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.4;
+  margin: 0 0 4px;
+}
+
+.peta-popup-detail-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid #271A62;
+  background-color: #FFFF6B;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.peta-popup-detail-btn:hover,
+.peta-popup-detail-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(39, 26, 98, 0.12);
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Legend Kecil di Pojok Kanan Bawah Peta
+   -------------------------------------------------------------------------- */
+.peta-map-legend {
+  position: absolute;
+  right: 18px;
+  bottom: 28px;
+  z-index: 500;
+  background-color: rgba(255, 255, 255, 0.96);
+  border: 1px solid #E6E8EC;
+  border-radius: 12px;
+  padding: 11px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.08);
+}
+
+.peta-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.peta-legend-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.peta-legend-swatch.normal {
+  background-color: #271A62;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 0 1px #271A62;
+}
+
+.peta-legend-swatch.recurring {
+  background-color: #FFFF6B;
+  border: 1.5px solid #271A62;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.peta-legend-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.81rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Layout (Desktop 1440px vs Tablet vs Mobile 390px)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .peta-workspace {
+    grid-template-columns: minmax(380px, 42%) minmax(0, 58%);
+  }
+}
+
+@media (max-width: 900px) {
+  .peta-mobile-tabs {
+    display: flex;
+  }
+
+  .peta-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .peta-sidebar {
+    border-right: none;
+  }
+
+  .peta-sidebar.mobile-hidden,
+  .peta-map-section.mobile-hidden {
+    display: none;
+  }
+
+  .peta-mobile-filter-bar {
+    display: block;
+  }
+
+  .peta-filters-collapsible {
+    display: none;
+  }
+
+  .peta-filters-collapsible.expanded {
+    display: flex;
+  }
+
+  .peta-map-top-bar {
+    left: 12px;
+    right: 52px;
+    top: 10px;
+    gap: 6px;
+  }
+
+  .peta-simulasi-disclaimer {
+    font-size: 0.72rem;
+    padding: 4px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .peta-sidebar-top {
+    padding: 16px 16px 14px;
+    gap: 12px;
+  }
+
+  .peta-report-list-container {
+    padding: 14px 16px 24px;
+  }
+
+  .peta-report-card {
+    padding: 14px 14px;
+  }
+
+  .peta-card-body {
+    gap: 12px;
+  }
+
+  .peta-card-thumb {
+    width: 68px;
+    height: 68px;
+  }
+
+  .peta-select-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .peta-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .peta-card-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .peta-card-map-action,
+  .peta-card-detail-action {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .peta-map-legend {
+    right: 10px;
+    bottom: 22px;
+    padding: 8px 12px;
+  }
+}

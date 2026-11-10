@@ -1,122 +1,236 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
+import Hero from './components/Hero';
+import CaraKerja from './components/CaraKerja';
+import RadarRusakLagi from './components/RadarRusakLagi';
+import JejakPanel from './components/JejakPanel';
+import Footer from './components/Footer';
+import ReportDetailModal from './components/ReportDetailModal';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
+import DashboardPage from './components/DashboardPage';
+import BuatLaporanPage from './components/BuatLaporanPage';
+import LaporanTerkirimPage from './components/LaporanTerkirimPage';
+import DetailLaporanPage from './components/DetailLaporanPage';
+import PetaLaporanPage from './components/PetaLaporanPage';
+import TransparansiPage from './components/TransparansiPage';
+import LaporanSayaPage from './components/LaporanSayaPage';
+import ProfilPage from './components/ProfilPage';
+import { SAMPLE_REPORTS } from './data/reportsData';
+import { useAuth } from './context/AuthContext';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+function ScrollToTopOnRoute() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
+
+// Perbaikan wajib 6: Lindungi halaman pribadi (/dashboard, /laporan-saya, /buat-laporan, /profil)
+// Pengunjung tanpa sesi diarahkan ke /masuk dengan menyimpan tujuan redirect
+function ProtectedRoute({ redirectPath, children }) {
+  const { isAuthenticated, savePendingRedirect } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated && redirectPath) {
+      savePendingRedirect(redirectPath);
+    }
+  }, [isAuthenticated, redirectPath, savePendingRedirect]);
+
+  if (!isAuthenticated) {
+    return (
+      <Navigate
+        to={`/masuk?redirect=${encodeURIComponent(redirectPath)}`}
+        replace
+      />
+    );
+  }
+  return children;
+}
+
+// Setelah autentikasi berhasil (dari /masuk atau /daftar), arahkan ke tujuan redirect atau /dashboard
+function AuthenticatedRedirect() {
+  const [searchParams] = useSearchParams();
+  const { consumePendingRedirect } = useAuth();
+  const target = consumePendingRedirect(searchParams.get('redirect'), '/dashboard');
+  return <Navigate to={target} replace />;
+}
+
+export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [selectedReport, setSelectedReport] = useState(null);
+  const {
+    user: currentUser,
+    isAuthenticated,
+    register,
+    login,
+    logout,
+    savePendingRedirect,
+  } = useAuth();
+
+  // Jika pengguna kembali ke Landing Page (/), akhiri sesi demo dengan aman
+  // agar saat menekan Masuk pengguna bisa login kembali.
+  // Akun demo dan data laporan yang tersimpan tidak akan terhapus.
+  useEffect(() => {
+    if (location.pathname === '/' && isAuthenticated) {
+      logout();
+    }
+  }, [location.pathname, isAuthenticated, logout]);
+
+  const featuredReport = SAMPLE_REPORTS[0];
+
+  const handleLogoClick = () => {
+    navigate('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Perbaikan wajib 7: Jika pengguna menekan "Buat Laporan" sebelum login -> simpan tujuan /buat-laporan dan arahkan ke /masuk
+  const handleCreateReport = () => {
+    if (!isAuthenticated) {
+      savePendingRedirect('/buat-laporan');
+      navigate('/masuk?redirect=/buat-laporan');
+      return;
+    }
+
+    navigate('/buat-laporan');
+  };
+
+  const handleAuthAction = (routePath) => {
+    navigate(routePath);
+  };
+
+  const landingView = (
+    <div className="terang-app">
+      <main className="landing-main">
+        {/* Hero Full-Screen + Navbar (SELALU Navbar Publik) */}
+        <Hero
+          onCreateReport={handleCreateReport}
+          onAuthAction={handleAuthAction}
+          onLogoClick={handleLogoClick}
+        />
+
+        {/* Section 01: Cara Kerja */}
+        <CaraKerja />
+
+        {/* Section 02: Radar Rusak Lagi (Peta Laporan Publik) */}
+        <RadarRusakLagi
+          onSelectReport={setSelectedReport}
+          report={featuredReport}
+        />
+
+        {/* Section 03: Transparansi (Jejak Keputusan & Anggaran Publik) */}
+        <JejakPanel
+          onSelectReport={setSelectedReport}
+          report={featuredReport}
+        />
+      </main>
+
+      {/* Footer */}
+      <Footer onLogoClick={handleLogoClick} />
+
+      {/* Detail Laporan Simulasi (TRG-024) */}
+      <ReportDetailModal
+        report={selectedReport}
+        onClose={() => setSelectedReport(null)}
+      />
+    </div>
+  );
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <ScrollToTopOnRoute />
+      <Routes>
+        {/* Halaman Publik (Landing Page, Peta Laporan, Transparansi) */}
+        <Route path="/" element={landingView} />
+        <Route
+          path="/peta-laporan"
+          element={<PetaLaporanPage user={currentUser} onLogout={logout} />}
+        />
+        <Route
+          path="/transparansi"
+          element={<TransparansiPage user={currentUser} onLogout={logout} />}
+        />
 
-      <div className="ticks"></div>
+        {/* Halaman Autentikasi */}
+        <Route
+          path="/masuk"
+          element={
+            isAuthenticated ? (
+              <AuthenticatedRedirect />
+            ) : (
+              <LoginPage onAuthenticate={login} />
+            )
+          }
+        />
+        <Route
+          path="/daftar"
+          element={
+            isAuthenticated ? (
+              <AuthenticatedRedirect />
+            ) : (
+              <RegisterPage onRegister={register} />
+            )
+          }
+        />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Halaman Pribadi Warga (Dilindungi ProtectedRoute) */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute redirectPath="/dashboard">
+              <DashboardPage user={currentUser} onLogout={logout} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/laporan-saya"
+          element={
+            <ProtectedRoute redirectPath="/laporan-saya">
+              <LaporanSayaPage user={currentUser} onLogout={logout} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buat-laporan"
+          element={
+            <ProtectedRoute redirectPath="/buat-laporan">
+              <BuatLaporanPage user={currentUser} onLogout={logout} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/laporan-terkirim"
+          element={
+            <ProtectedRoute redirectPath="/dashboard">
+              <LaporanTerkirimPage user={currentUser} onLogout={logout} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/laporan/:reportId"
+          element={<DetailLaporanPage user={currentUser} onLogout={logout} />}
+        />
+        <Route
+          path="/profil"
+          element={
+            <ProtectedRoute redirectPath="/profil">
+              <ProfilPage user={currentUser} onLogout={logout} />
+            </ProtectedRoute>
+          }
+        />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
-  )
+  );
 }
-
-export default App

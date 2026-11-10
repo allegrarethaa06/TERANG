@@ -1,0 +1,496 @@
+/* ==========================================================================
+   TERANG — Halaman Laporan Saya (/laporan-saya)
+   Brand Colors: Primary Yellow #FFFF6B | Dark Blue #271A62 | White #FFFFFF
+   Typography: Plus Jakarta Sans (Headings) & Inter (Body)
+   ========================================================================== */
+
+.laporan-saya-page {
+  min-height: 100svh;
+  width: 100%;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+}
+
+.lps-main {
+  flex: 1;
+  width: 100%;
+  padding-bottom: 80px;
+}
+
+.lps-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 36px clamp(16px, 4vw, 40px) 0;
+}
+
+/* --------------------------------------------------------------------------
+   Page Header
+   -------------------------------------------------------------------------- */
+.lps-header {
+  margin-bottom: 28px;
+}
+
+.lps-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.8rem, 2.5vw, 2.1rem);
+  font-weight: 700;
+  color: #271A62;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.lps-subtitle {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #667085;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Search Bar (Full Width, 50px height, No Inner Focus Outline)
+   -------------------------------------------------------------------------- */
+.lps-search-bar-wrap {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.lps-search-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 9999px;
+  height: 50px; /* 48-52px proporsional */
+  padding: 0 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Focus ring HANYA muncul pada kontainer luar pill secara halus */
+.lps-search-box:focus-within {
+  border-color: #271A62;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.12);
+}
+
+.lps-search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667085;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+/* Input DI DALAM search bar: hapus segala outline persegi dan border bawaan */
+.lps-search-input,
+.lps-search-input:focus,
+.lps-search-input:focus-visible {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.95rem;
+  color: #343446;
+  height: 100%;
+  padding: 0;
+}
+
+.lps-search-input::placeholder {
+  color: #98A2B3;
+  font-weight: 400;
+}
+
+.lps-search-clear {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #98A2B3;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s ease;
+}
+
+.lps-search-clear:hover {
+  color: #271A62;
+}
+
+/* --------------------------------------------------------------------------
+   Filter Row: Chips & Counter
+   -------------------------------------------------------------------------- */
+.lps-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.lps-filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lps-filter-chip {
+  border-radius: 9999px;
+  padding: 8px 18px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #E5E7EB;
+  background-color: #FFFFFF;
+  color: #343446;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.lps-filter-chip:hover {
+  border-color: #D0D5DD;
+  background-color: #F9FAFB;
+}
+
+.lps-filter-chip.active {
+  background-color: #271A62;
+  color: #FFFFFF;
+  border-color: #271A62;
+  font-weight: 600;
+}
+
+.lps-counter {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.88rem;
+  color: #667085;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Daftar Laporan (Langsung Vertikal, Full Width, Gap 16px, Tanpa Wadah Luar)
+   -------------------------------------------------------------------------- */
+.lps-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.lps-report-card {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.lps-report-card:hover {
+  border-color: #D0D5DD;
+  box-shadow: 0 4px 16px rgba(16, 24, 40, 0.08);
+}
+
+.lps-card-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+  min-width: 0;
+}
+
+.lps-thumb-wrap {
+  width: 110px;
+  height: 78px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #F2F4F7;
+}
+
+.lps-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lps-info-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.lps-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lps-report-id {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #475467;
+}
+
+.lps-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.lps-card-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #1D2939;
+  margin: 0;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lps-meta-bottom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem;
+  color: #667085;
+  font-weight: 400;
+}
+
+.lps-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #667085;
+  font-weight: 400;
+}
+
+.lps-meta-divider {
+  color: #D0D5DD;
+  user-select: none;
+  font-size: 0.75rem;
+}
+
+.lps-card-right {
+  flex-shrink: 0;
+}
+
+.lps-btn-detail {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #271A62;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  padding: 9px 24px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.lps-btn-detail:hover {
+  background-color: #1a1048;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 26, 98, 0.25);
+}
+
+.lps-btn-detail:active {
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Empty States (Belum Ada Laporan & Pencarian Tidak Ditemukan)
+   -------------------------------------------------------------------------- */
+.lps-empty-card {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 68px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 420px;
+}
+
+.lps-empty-caya {
+  width: 136px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 24px;
+}
+
+.lps-empty-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #271A62;
+  margin: 0 0 8px 0;
+}
+
+.lps-empty-desc {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: #667085;
+  max-width: 440px;
+  margin: 0 0 24px 0;
+  line-height: 1.55;
+}
+
+/* Tombol Buat Laporan Utama (HANYA pada kondisi Belum Ada Laporan) */
+.lps-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 26px;
+  background-color: #FFFF6B;
+  color: #271A62;
+  border: none;
+  border-radius: 9999px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  white-space: nowrap;
+}
+
+.lps-btn-primary:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 255, 107, 0.45);
+}
+
+.lps-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Pencarian Tidak Ditemukan Icon */
+.lps-not-found-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #FFFEE8;
+  border: 1px solid #FEF08A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #271A62;
+  margin-bottom: 18px;
+}
+
+.lps-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 28px;
+  border: 1.5px solid #271A62;
+  border-radius: 9999px;
+  background-color: transparent;
+  color: #271A62;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.lps-btn-outline:hover {
+  background-color: rgba(39, 26, 98, 0.05);
+}
+
+.lps-btn-outline:active {
+  transform: scale(0.98);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adaptations
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .lps-filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lps-filter-chips {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .lps-filter-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lps-report-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .lps-card-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .lps-thumb-wrap {
+    width: 100%;
+    height: 160px;
+  }
+
+  .lps-card-title {
+    white-space: normal;
+  }
+
+  .lps-btn-detail {
+    width: 100%;
+  }
+}

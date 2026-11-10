@@ -1,0 +1,652 @@
+/* ==========================================================================
+   TERANG — Halaman Profil Saya (/profil)
+   Brand Colors: Primary Yellow #FFFF6B | Dark Blue #271A62 | White #FFFFFF
+   Typography: Plus Jakarta Sans (Headings) & Inter (Body)
+   ========================================================================== */
+
+.profil-page {
+  min-height: 100svh;
+  width: 100%;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+}
+
+.profil-main {
+  flex: 1;
+  width: 100%;
+  padding-bottom: 80px;
+}
+
+.profil-container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px clamp(16px, 4vw, 40px) 0;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+.profil-header {
+  margin-bottom: 24px;
+}
+
+.profil-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.8rem, 2.5vw, 2.1rem);
+  font-weight: 700;
+  color: #271A62;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.profil-subtitle {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #667085;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Profile Header Banner Card
+   -------------------------------------------------------------------------- */
+.profil-banner-card {
+  width: 100%;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.profil-banner-accent {
+  width: 100%;
+  height: 78px;
+  background-color: #FFFDD0;
+}
+
+.profil-banner-body {
+  padding: 0 32px 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.profil-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profil-avatar-large {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background-color: #271A62;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  border: 4px solid #FFFFFF;
+  box-shadow: 0 4px 10px rgba(39, 26, 98, 0.12);
+  margin-top: -38px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.profil-avatar-large-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profil-banner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.profil-banner-name {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #271A62;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.profil-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #F0EFFB;
+  color: #271A62;
+  border-radius: 9999px;
+  padding: 3px 10px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.profil-banner-right {
+  margin-top: 6px;
+}
+
+.profil-btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FFFF6B;
+  color: #271A62;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 22px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  white-space: nowrap;
+}
+
+.profil-btn-edit:hover:not(:disabled) {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 255, 107, 0.45);
+}
+
+.profil-btn-edit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Two-Column Grid Layout
+   -------------------------------------------------------------------------- */
+.profil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.profil-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  padding: 28px 28px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.profil-card-header {
+  margin-bottom: 20px;
+}
+
+.profil-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.profil-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #271A62;
+}
+
+.profil-card-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #271A62;
+  margin: 0;
+}
+
+.profil-card-desc {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #667085;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Form Fields (Informasi Pribadi)
+   -------------------------------------------------------------------------- */
+.profil-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profil-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profil-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+.profil-value-box {
+  width: 100%;
+  height: 48px;
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.93rem;
+  color: #343446;
+  box-sizing: border-box;
+}
+
+.profil-value-box--disabled {
+  color: #475467;
+}
+
+.profil-input {
+  width: 100%;
+  height: 48px;
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.93rem;
+  color: #343446;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profil-input--editing {
+  border: 1.5px solid #271A62 !important;
+  box-shadow: 0 0 0 3px rgba(39, 26, 98, 0.1) !important;
+}
+
+.profil-helper-text {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  color: #667085;
+  margin-top: 2px;
+}
+
+/* Actions in Edit Mode */
+.profil-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.profil-btn-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 22px;
+  background-color: #FFFF6B;
+  color: #271A62;
+  border: none;
+  border-radius: 9999px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.profil-btn-save:hover:not(:disabled) {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 107, 0.4);
+}
+
+.profil-btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profil-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 20px;
+  background-color: transparent;
+  color: #343446;
+  border: 1px solid #D0D5DD;
+  border-radius: 9999px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.profil-btn-cancel:hover {
+  background-color: #F9FAFB;
+  border-color: #98A2B3;
+}
+
+/* --------------------------------------------------------------------------
+   Keamanan Akun
+   -------------------------------------------------------------------------- */
+.profil-security-box {
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  background-color: #FFFFFF;
+}
+
+.profil-security-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.profil-key-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background-color: #F0EFFB;
+  color: #271A62;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profil-security-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.profil-security-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #271A62;
+  margin: 0;
+}
+
+.profil-security-desc {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem;
+  color: #667085;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.profil-btn-change-pw {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #271A62;
+  background-color: transparent;
+  color: #271A62;
+  border-radius: 9999px;
+  padding: 9px 20px;
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.profil-btn-change-pw:hover {
+  background-color: #F0EFFB;
+}
+
+.profil-security-helper {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.82rem;
+  color: #667085;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Feedback / Alerts
+   -------------------------------------------------------------------------- */
+.profil-alert {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.profil-alert--success {
+  background-color: #ECFDF3;
+  border: 1px solid #A6F4C5;
+  color: #027A48;
+}
+
+.profil-alert--error {
+  background-color: #FEF3F2;
+  border: 1px solid #FECDCA;
+  color: #B42318;
+}
+
+.profil-alert--info {
+  background-color: #EFF8FF;
+  border: 1px solid #B2DDFF;
+  color: #175CD3;
+}
+
+/* --------------------------------------------------------------------------
+   Modal Ubah Kata Sandi
+   -------------------------------------------------------------------------- */
+.profil-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(39, 26, 98, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.profil-modal-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  padding: 28px 30px;
+  box-shadow: 0 20px 40px rgba(39, 26, 98, 0.16);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profil-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.profil-modal-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #271A62;
+  margin: 0 0 4px 0;
+}
+
+.profil-modal-subtitle {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.85rem;
+  color: #667085;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.profil-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #98A2B3;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.15s ease;
+}
+
+.profil-modal-close:hover {
+  color: #271A62;
+}
+
+.profil-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profil-input-pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.profil-input--pw {
+  padding-right: 44px;
+}
+
+.profil-pw-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #667085;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.profil-pw-toggle:hover {
+  color: #271A62;
+}
+
+.profil-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adaptations
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .profil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-banner-body {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 20px 20px 20px;
+  }
+
+  .profil-avatar-large {
+    width: 68px;
+    height: 68px;
+    font-size: 1.3rem;
+    margin-top: -34px;
+  }
+
+  .profil-banner-right {
+    width: 100%;
+  }
+
+  .profil-btn-edit {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profil-card {
+    padding: 22px 20px;
+  }
+
+  .profil-security-box {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .profil-btn-change-pw {
+    width: 100%;
+  }
+
+  .profil-modal-card {
+    padding: 24px 20px;
+  }
+
+  .profil-modal-actions {
+    flex-direction: column;
+  }
+
+  .profil-modal-actions button {
+    width: 100%;
+  }
+}

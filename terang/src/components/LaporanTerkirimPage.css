@@ -1,0 +1,436 @@
+/* ==========================================================================
+   TERANG — Halaman Laporan Berhasil Dikirim (/laporan-terkirim)
+   & Halaman Detail Laporan (/laporan/:reportId)
+   Brand: Primary Yellow #FFFF6B | Dark Blue #271A62 | White #FFFFFF
+   Typography: Plus Jakarta Sans (Headings/Buttons) & Inter (Body)
+   ========================================================================== */
+
+.laporan-sukses-page {
+  min-height: 100svh;
+  width: 100%;
+  background-color: #FFFFFF;
+  color: #271A62;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Revisi 3: Seimbang secara vertikal, kurangi ruang kosong berlebihan tanpa kartu/dekorasi */
+.laporan-sukses-main {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(28px, 4.5vh, 48px) 20px clamp(36px, 6vh, 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.laporan-sukses-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Revisi 2: Karakter CAYA tersenyum dari aset PNG transparan asli */
+.laporan-sukses-caya {
+  width: clamp(118px, 12vw, 138px);
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 18px;
+  user-select: none;
+}
+
+/* Revisi 4: Headline & Deskripsi */
+.laporan-sukses-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+  font-weight: 800;
+  color: #271A62;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+.laporan-sukses-desc {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.5;
+  max-width: 48ch;
+  margin: 0 0 22px;
+}
+
+/* Revisi 5: Pill ID Laporan & Status "Menunggu Verifikasi" */
+.laporan-sukses-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background-color: #F8F9FC;
+  border: 1px solid #E4E7EC;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.laporan-sukses-id {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #271A62;
+  letter-spacing: 0.01em;
+}
+
+.laporan-sukses-dot {
+  color: #CBD5E1;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.laporan-sukses-status {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #2563EB;
+}
+
+.laporan-sukses-helper {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #667085;
+  line-height: 1.45;
+  margin: 0 0 14px;
+}
+
+/* Revisi 6 & 7: Tombol Utama "Lihat Detail Laporan" & Link Sekunder "Kembali ke Dashboard" */
+.laporan-sukses-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.laporan-sukses-primary-btn {
+  width: 100%;
+  height: 52px;
+  padding: 0 28px;
+  border-radius: 14px;
+  border: 1.5px solid #271A62;
+  background-color: #FFFF6B;
+  color: #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(39, 26, 98, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.laporan-sukses-primary-btn:hover,
+.laporan-sukses-primary-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(39, 26, 98, 0.14);
+  outline: none;
+}
+
+.laporan-sukses-dashboard-link {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #271A62;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.laporan-sukses-dashboard-link:hover,
+.laporan-sukses-dashboard-link:focus-visible {
+  background-color: #F8F9FC;
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Revisi 10: Keterangan halus "Data simulasi" */
+.laporan-sukses-simulasi-note {
+  margin-top: 24px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #98A2B3;
+}
+
+/* ==========================================================================
+   Halaman Detail Laporan Warga (/laporan/:reportId)
+   ========================================================================== */
+.detail-laporan-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: clamp(24px, 3vw, 36px) clamp(16px, 4vw, 48px) 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-laporan-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detail-laporan-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #271A62;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid #E4E7EC;
+  background-color: #FFFFFF;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.detail-laporan-back-link:hover,
+.detail-laporan-back-link:focus-visible {
+  background-color: #F9FAFB;
+  border-color: #271A62;
+  outline: none;
+}
+
+.detail-laporan-simulasi-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background-color: #F9FAFB;
+  border: 1px solid #E4E7EC;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.detail-laporan-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E4E7EC;
+  border-radius: 16px;
+  padding: clamp(20px, 2.8vw, 30px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 6px 20px rgba(39, 26, 98, 0.03);
+}
+
+.detail-laporan-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #EAECF0;
+  flex-wrap: wrap;
+}
+
+.detail-laporan-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-laporan-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.detail-laporan-id-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: #F8F9FC;
+  border: 1px solid #D0D5DD;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #271A62;
+}
+
+.detail-laporan-category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: #FFFF6B;
+  border: 1px solid #271A62;
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #271A62;
+}
+
+.detail-laporan-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2vw, 1.65rem);
+  font-weight: 700;
+  color: #271A62;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.detail-laporan-date {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.85rem;
+  color: #667085;
+}
+
+.detail-laporan-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  font-family: var(--font-heading);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #1D4ED8;
+}
+
+.detail-laporan-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 54fr) minmax(0, 46fr);
+  gap: clamp(22px, 3vw, 34px);
+  align-items: start;
+}
+
+.detail-laporan-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.detail-laporan-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-laporan-label {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #343446;
+}
+
+.detail-laporan-address {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #303040;
+  line-height: 1.5;
+}
+
+.detail-laporan-coords {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.84rem;
+  font-weight: 400;
+  color: #667085;
+}
+
+.detail-laporan-desc {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.94rem;
+  font-weight: 400;
+  color: #303040;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.detail-laporan-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.detail-laporan-photo-item {
+  border-radius: 12px;
+  border: 1px solid #E4E7EC;
+  overflow: hidden;
+  background-color: #F9FAFB;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-laporan-photo-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-laporan-photo-name {
+  padding: 7px 10px;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.8rem;
+  color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #FFFFFF;
+}
+
+.detail-laporan-map-wrap {
+  width: 100%;
+  height: 210px;
+  border-radius: 14px;
+  border: 1px solid #E4E7EC;
+  overflow: hidden;
+  background-color: #F2F4F7;
+}
+
+.detail-laporan-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+@media (max-width: 860px) {
+  .detail-laporan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .laporan-sukses-main {
+    padding: 24px 16px 40px;
+  }
+
+  .laporan-sukses-actions {
+    max-width: 100%;
+  }
+}

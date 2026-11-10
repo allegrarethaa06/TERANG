@@ -1,0 +1,27 @@
+# Backup and experiment folders
+backup_old_frontend/
+.agents/
+.taste-skill/
+skills-lock.json
+
+# Environment variables & local secrets
+.env
+.env.local
+.env.*.local
+*.local
+
+# Node & Build artifacts
+node_modules/
+dist/
+dist-ssr/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# System & IDE files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
