@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ReportDetailModal({ report, onClose }) {
   const [activeTab, setActiveTab] = useState('summary');
   const [citizenVote, setCitizenVote] = useState(null);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   if (!report) return null;
 
@@ -278,9 +288,6 @@ export default function ReportDetailModal({ report, onClose }) {
           <span className="footer-disclaimer-text">
             Kecamatan Coblong Pilot Sandbox, Prototipe Web In Action 2026
           </span>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
-            Tutup
-          </button>
         </div>
       </div>
 
@@ -655,9 +662,10 @@ export default function ReportDetailModal({ report, onClose }) {
         .modal-footer {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding: 16px 28px;
+          justify-content: flex-start;
+          padding: 16px 28px 22px;
           background-color: var(--c-white);
+          border-top: 1px solid #EAEAF2;
         }
         .footer-disclaimer-text {
           font-size: 0.875rem;

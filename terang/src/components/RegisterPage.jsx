@@ -369,8 +369,7 @@ export default function RegisterPage({ onRegister }) {
 
               {searchParams.get('redirect') === '/buat-laporan' && (
                 <div className="auth-redirect-notice" role="status">
-                  Setelah pendaftaran berhasil, Anda akan langsung diarahkan ke halaman{' '}
-                  <strong>Buat Laporan</strong> (<code>/buat-laporan</code>).
+                  Setelah memverifikasi email dan masuk ke akun, kamu dapat mulai membuat laporan kerusakan fasilitas publik.
                 </div>
               )}
             </div>

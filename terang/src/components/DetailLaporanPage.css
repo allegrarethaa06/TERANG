@@ -579,60 +579,90 @@
 .detail-laporan-timeline-step {
   position: relative;
   display: grid;
-  grid-template-columns: 110px 22px 1fr;
-  column-gap: 14px;
-  padding-bottom: 22px; /* 20-24px vertical distance */
+  grid-template-columns: 140px 24px 1fr;
+  column-gap: 20px;
+  padding-bottom: 24px; /* 20-24px vertical distance */
 }
 
 .detail-laporan-timeline-step:last-child {
   padding-bottom: 0;
 }
 
-.detail-laporan-timeline-step::before {
-  content: '';
-  position: absolute;
-  left: calc(110px + 14px + 10px);
-  top: 14px;
-  bottom: -2px;
-  width: 2px;
-  background-color: #E2E1EC;
-}
-
-.detail-laporan-timeline-step:last-child::before {
-  display: none;
-}
-
+/* Area 1: Tanggal & Waktu */
 .detail-laporan-step-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
   padding-top: 1px;
-  font-size: 0.82rem;
-  color: #667085;
   font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  gap: 2px;
+}
+
+.detail-laporan-step-date {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475467;
   white-space: nowrap;
+}
+
+.detail-laporan-step-clock {
+  font-size: 0.78rem;
+  color: #667085;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Area 2: Indikator Timeline (Bulatan & Garis Vertikal) */
+.detail-laporan-step-indicator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+  height: 100%;
 }
 
 .detail-laporan-step-dot {
   position: relative;
-  z-index: 1;
-  justify-self: center;
-  margin-top: 5px;
-  width: 10px;
-  height: 10px;
+  z-index: 2;
+  margin-top: 3px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background-color: #FFFFFF;
   border: 2px solid #A8A3CC;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .detail-laporan-timeline-step.current .detail-laporan-step-dot {
-  margin-top: 2px;
-  width: 18px;
-  height: 18px;
+  margin-top: 1px;
+  width: 16px;
+  height: 16px;
   background-color: #FFFF6B;
   border: 3px solid #271A62;
-  box-shadow: 0 0 0 4px rgba(255, 255, 107, 0.45);
+  box-shadow: 0 0 0 3px rgba(255, 255, 107, 0.45);
 }
 
+.detail-laporan-step-line {
+  position: absolute;
+  top: 14px;
+  bottom: -24px;
+  width: 2px;
+  background-color: #E2E1EC;
+  z-index: 1;
+}
+
+.detail-laporan-timeline-step:last-child .detail-laporan-step-line {
+  display: none;
+}
+
+/* Area 3: Deskripsi Keputusan */
 .detail-laporan-step-content {
   flex: 1;
+  min-width: 0;
 }
 
 .detail-laporan-step-title {
@@ -646,6 +676,11 @@
   font-weight: 600;
   color: #303040;
   line-height: 1.4;
+}
+
+.detail-laporan-step-title-text {
+  color: #271A62;
+  font-weight: 700;
 }
 
 .detail-laporan-timeline-step.current .detail-laporan-step-title {
@@ -832,27 +867,48 @@
   }
 
   .detail-laporan-timeline-step {
-    grid-template-columns: 20px 1fr;
-    column-gap: 12px;
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    column-gap: 14px;
+    padding-bottom: 24px;
   }
 
-  .detail-laporan-timeline-step::before {
-    left: 9px;
+  .detail-laporan-step-indicator {
+    grid-column: 1;
+    grid-row: 1 / span 2;
   }
 
   .detail-laporan-step-time {
     grid-column: 2;
     grid-row: 1;
-    font-size: 0.78rem;
-    margin-bottom: 2px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 8px;
+    margin-bottom: 4px;
+    padding-top: 0;
   }
 
-  .detail-laporan-step-dot {
-    grid-column: 1;
-    grid-row: 1 / span 2;
+  .detail-laporan-step-date {
+    font-size: 0.8rem;
+  }
+
+  .detail-laporan-step-clock {
+    font-size: 0.78rem;
+    position: relative;
+    padding-left: 8px;
+  }
+
+  .detail-laporan-step-clock::before {
+    content: '•';
+    position: absolute;
+    left: -2px;
+    color: #98A2B3;
   }
 
   .detail-laporan-step-content {
     grid-column: 2;
+    grid-row: 2;
   }
 }

@@ -753,8 +753,8 @@
 .trp-step {
   position: relative;
   display: grid;
-  grid-template-columns: 104px 22px 1fr;
-  column-gap: 14px;
+  grid-template-columns: 120px 22px 1fr;
+  column-gap: 16px;
   padding-bottom: 22px; /* 20-24px vertical distance */
 }
 
@@ -766,7 +766,7 @@
 .trp-step::before {
   content: '';
   position: absolute;
-  left: calc(104px + 14px + 10px);
+  left: calc(120px + 16px + 10px);
   top: 14px;
   bottom: -2px;
   width: 2px;

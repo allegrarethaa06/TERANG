@@ -60,6 +60,31 @@ function formatSafetyRiskAnswer(raw) {
   return 'Tidak Yakin';
 }
 
+function formatTimelineDate(dateStr) {
+  if (!dateStr) return { date: '', time: '' };
+  const str = String(dateStr).trim();
+
+  // If format has comma separating date and time (e.g. "12 Mei 2026, 09:20 WIB")
+  if (str.includes(',')) {
+    const commaIndex = str.indexOf(',');
+    return {
+      date: str.slice(0, commaIndex).trim(),
+      time: str.slice(commaIndex + 1).trim(),
+    };
+  }
+
+  // If format has "WIB" without comma, e.g. "12 Mei 2026 09:20 WIB"
+  const wibMatch = str.match(/^(.*?)(\d{1,2}[:.]\d{2}(?:\s*WIB)?)$/i);
+  if (wibMatch) {
+    return {
+      date: wibMatch[1].trim(),
+      time: wibMatch[2].trim(),
+    };
+  }
+
+  return { date: str, time: '' };
+}
+
 const TERANG_MARKER_ICON = L.divIcon({
   className: 'terang-map-marker-icon',
   html: `
@@ -398,26 +423,42 @@ export default function DetailLaporanPage({ user, onLogout }) {
               Jejak Keputusan
             </h2>
             <ol className="detail-laporan-timeline">
-              {timelineSteps.map((step) => (
-                <li
-                  key={step.key || step.title}
-                  className={`detail-laporan-timeline-step ${step.isCurrent ? 'current' : ''}`}
-                >
-                  <span className="detail-laporan-step-time">{step.date}</span>
-                  <span className="detail-laporan-step-dot" aria-hidden="true" />
-                  <div className="detail-laporan-step-content">
-                    <p className="detail-laporan-step-title">
-                      {step.title}
-                      {step.isCurrent && (
-                        <span className="detail-laporan-step-current-tag">Tahap terkini</span>
+              {timelineSteps.map((step) => {
+                const { date: datePart, time: timePart } = formatTimelineDate(step.date);
+                return (
+                  <li
+                    key={step.key || step.title}
+                    className={`detail-laporan-timeline-step ${step.isCurrent ? 'current' : ''}`}
+                  >
+                    {/* Area 1: Tanggal & Waktu */}
+                    <div className="detail-laporan-step-time">
+                      <span className="detail-laporan-step-date">{datePart}</span>
+                      {timePart && (
+                        <span className="detail-laporan-step-clock">{timePart}</span>
                       )}
-                    </p>
-                    {step.note && (
-                      <p className="detail-laporan-step-note">{step.note}</p>
-                    )}
-                  </div>
-                </li>
-              ))}
+                    </div>
+
+                    {/* Area 2: Indikator Timeline (Bulatan & Garis Vertikal) */}
+                    <div className="detail-laporan-step-indicator" aria-hidden="true">
+                      <span className="detail-laporan-step-dot" />
+                      <span className="detail-laporan-step-line" />
+                    </div>
+
+                    {/* Area 3: Deskripsi Keputusan */}
+                    <div className="detail-laporan-step-content">
+                      <p className="detail-laporan-step-title">
+                        <span className="detail-laporan-step-title-text">{step.title}</span>
+                        {step.isCurrent && (
+                          <span className="detail-laporan-step-current-tag">Tahap terkini</span>
+                        )}
+                      </p>
+                      {step.note && (
+                        <p className="detail-laporan-step-note">{step.note}</p>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         )}
