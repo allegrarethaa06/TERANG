@@ -388,7 +388,7 @@ export default function LaporanSayaPage({ user, onLogout }) {
                     const thumbUrl =
                       item.photoUrl ||
                       item.photoPreviews?.[0]?.previewUrl ||
-                      '/images/ubud-jalan-raya-pothole-2009.jpg';
+                      (item.isDemoData ? '/images/ubud-jalan-raya-pothole-2009.jpg' : '');
                     const displayTitle =
                       item.title ||
                       item.customCategory ||
@@ -401,16 +401,59 @@ export default function LaporanSayaPage({ user, onLogout }) {
                     return (
                       <article key={normId} className="lps-report-card">
                         <div className="lps-card-left">
-                          <div className="lps-thumb-wrap">
-                            <img
-                              src={thumbUrl}
-                              alt={`Foto kerusakan ${formattedId}`}
-                              className="lps-thumb-img"
-                              onError={(e) => {
-                                e.currentTarget.src =
-                                  '/images/ubud-jalan-raya-pothole-2009.jpg';
-                              }}
-                            />
+                          <div className="lps-thumb-wrap" style={{ position: 'relative' }}>
+                            {thumbUrl ? (
+                              <img
+                                src={thumbUrl}
+                                alt={`Foto kerusakan ${formattedId}`}
+                                className="lps-thumb-img"
+                                onError={(e) => {
+                                  if (item.isDemoData) {
+                                    e.currentTarget.src =
+                                      '/images/ubud-jalan-raya-pothole-2009.jpg';
+                                  } else {
+                                    e.currentTarget.style.display = 'none';
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <div
+                                className="lps-thumb-placeholder"
+                                aria-label="Tidak ada foto terlampir"
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  backgroundColor: '#F2F4F7',
+                                  color: '#98A2B3',
+                                }}
+                              >
+                                <CategoryIcon />
+                              </div>
+                            )}
+                            {item.isDemoData && (
+                              <span
+                                className="lps-thumb-simulasi-badge"
+                                title="Foto ilustrasi · Data simulasi"
+                                style={{
+                                  position: 'absolute',
+                                  bottom: '4px',
+                                  left: '4px',
+                                  fontSize: '9.5px',
+                                  fontWeight: 600,
+                                  backgroundColor: 'rgba(39, 26, 98, 0.78)',
+                                  color: '#FFFFFF',
+                                  padding: '2px 5px',
+                                  borderRadius: '4px',
+                                  pointerEvents: 'none',
+                                  lineHeight: 1.2,
+                                }}
+                              >
+                                Simulasi
+                              </span>
+                            )}
                           </div>
 
                           <div className="lps-info-wrap">

@@ -82,6 +82,9 @@ export function getUserInitials(fullName = '') {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
+// In-memory cache laporan per email untuk sinkronisasi instan antar komponen & halaman
+const demoUserReportsMemory = {};
+
 /**
  * Normalisasi ID Laporan (menghapus tanda # di depan dan spasi)
  */
@@ -91,22 +94,35 @@ export function normalizeReportId(id) {
 }
 
 /**
- * Deduplikasi daftar laporan berdasarkan ID unik
+ * Deduplikasi daftar laporan berdasarkan ID unik.
+ * Jika terdapat dua salinan dengan ID sama, gabungkan propertinya
+ * agar photoUrl & photoPreviews yang valid tidak terhapus.
  */
 export function deduplicateReports(reportsList) {
   if (!Array.isArray(reportsList)) return [];
-  const seenIds = new Set();
-  const result = [];
+  const reportMap = new Map();
   for (const item of reportsList) {
     if (!item) continue;
     const norm = normalizeReportId(item.id);
-    if (norm) {
-      if (seenIds.has(norm)) continue;
-      seenIds.add(norm);
+    const key = norm || `item_${Math.random()}`;
+    if (!reportMap.has(key)) {
+      reportMap.set(key, item);
+    } else {
+      const existing = reportMap.get(key);
+      const merged = {
+        ...existing,
+        ...item,
+        // Pertahankan photoUrl jika ada yang valid
+        photoUrl: item.photoUrl || existing.photoUrl || '',
+        photoPreviews:
+          Array.isArray(item.photoPreviews) && item.photoPreviews.length > 0
+            ? item.photoPreviews
+            : existing.photoPreviews,
+      };
+      reportMap.set(key, merged);
     }
-    result.push(item);
   }
-  return result;
+  return Array.from(reportMap.values());
 }
 
 /**
@@ -120,22 +136,12 @@ export function readDemoUserReports(email = '') {
   try {
     let combined = [];
 
-    // Baca dari localStorage
-    try {
-      if (window.localStorage) {
-        const rawLocal = window.localStorage.getItem(DEMO_REPORTS_KEY);
-        if (rawLocal) {
-          const parsedLocal = JSON.parse(rawLocal);
-          if (parsedLocal && Array.isArray(parsedLocal[cleanEmail])) {
-            combined = [...combined, ...parsedLocal[cleanEmail]];
-          }
-        }
-      }
-    } catch {
-      // Ignore
+    // 1. Baca dari in-memory cache jika ada (paling up-to-date)
+    if (Array.isArray(demoUserReportsMemory[cleanEmail])) {
+      combined = [...combined, ...demoUserReportsMemory[cleanEmail]];
     }
 
-    // Baca dari sessionStorage
+    // 2. Baca dari sessionStorage (prioritas sesi saat ini)
     try {
       if (window.sessionStorage) {
         const rawSession = window.sessionStorage.getItem(DEMO_REPORTS_KEY);
@@ -150,33 +156,35 @@ export function readDemoUserReports(email = '') {
       // Ignore
     }
 
-    const deduplicated = deduplicateReports(combined);
-
-    // Sinkronisasi kembali data bersih ke kedua storage jika terdapat duplikasi sebelumnya
-    if (combined.length !== deduplicated.length) {
-      try {
-        const syncMap = (storage) => {
-          if (!storage) return;
-          const raw = storage.getItem(DEMO_REPORTS_KEY);
-          const map = raw ? JSON.parse(raw) : {};
-          map[cleanEmail] = deduplicated;
-          storage.setItem(DEMO_REPORTS_KEY, JSON.stringify(map));
-        };
-        syncMap(window.localStorage);
-        syncMap(window.sessionStorage);
-      } catch {
-        // Ignore
+    // 3. Baca dari localStorage (penyimpanan lintas sesi)
+    try {
+      if (window.localStorage) {
+        const rawLocal = window.localStorage.getItem(DEMO_REPORTS_KEY);
+        if (rawLocal) {
+          const parsedLocal = JSON.parse(rawLocal);
+          if (parsedLocal && Array.isArray(parsedLocal[cleanEmail])) {
+            combined = [...combined, ...parsedLocal[cleanEmail]];
+          }
+        }
       }
+    } catch {
+      // Ignore
     }
+
+    const deduplicated = deduplicateReports(combined);
+    demoUserReportsMemory[cleanEmail] = deduplicated;
 
     return deduplicated;
   } catch {
-    return [];
+    return Array.isArray(demoUserReportsMemory[cleanEmail])
+      ? demoUserReportsMemory[cleanEmail]
+      : [];
   }
 }
 
 /**
- * Menyimpan laporan baru ke daftar laporan demo milik akun yang sedang login
+ * Menyimpan laporan baru ke daftar laporan demo milik akun yang sedang login.
+ * Menjamin foto yang diunggah pengguna tetap tersimpan dan tidak menimpa laporan lama.
  */
 export function saveDemoUserReport(email, reportItem) {
   if (typeof window === 'undefined' || !reportItem) return [];
@@ -186,45 +194,85 @@ export function saveDemoUserReport(email, reportItem) {
     const existing = readDemoUserReports(cleanEmail);
     const newNormId = normalizeReportId(reportItem.id);
 
-    // Jika ID laporan sudah ada, perbarui atau abaikan duplikasi
+    // Pastikan status isDemoData konsisten: false untuk laporan asli pengguna
+    const sanitizedItem = {
+      ...reportItem,
+      isDemoData: reportItem.isDemoData === true,
+    };
+
+    // Jika ID laporan sudah ada (misal edit), perbarui pada posisi yang sama.
+    // Jika belum ada (laporan baru), tambahkan di posisi paling depan.
     let updated;
     const existingIndex = existing.findIndex(
       (r) => r && normalizeReportId(r.id) === newNormId
     );
 
     if (existingIndex >= 0) {
-      // Sudah ada, gantikan versi terbaru pada posisi yang sama tanpa menambah item
       updated = [...existing];
-      updated[existingIndex] = { ...existing[existingIndex], ...reportItem };
+      updated[existingIndex] = {
+        ...existing[existingIndex],
+        ...sanitizedItem,
+        photoUrl: sanitizedItem.photoUrl || existing[existingIndex].photoUrl || '',
+        photoPreviews:
+          Array.isArray(sanitizedItem.photoPreviews) && sanitizedItem.photoPreviews.length > 0
+            ? sanitizedItem.photoPreviews
+            : existing[existingIndex].photoPreviews,
+      };
     } else {
-      // Belum ada, tambahkan di paling depan
-      updated = deduplicateReports([reportItem, ...existing]);
+      updated = [sanitizedItem, ...existing];
     }
 
-    // Simpan ke localStorage & sessionStorage
-    const saveToStorage = (storage, items) => {
+    // Perbarui in-memory cache seketika
+    demoUserReportsMemory[cleanEmail] = updated;
+
+    // Helper aman untuk penyimpanan browser (localStorage & sessionStorage)
+    const saveToStorage = (storage) => {
       if (!storage) return;
-      const raw = storage.getItem(DEMO_REPORTS_KEY);
-      const parsed = raw ? JSON.parse(raw) : {};
-      const map = parsed && typeof parsed === 'object' ? parsed : {};
-      map[cleanEmail] = items;
       try {
+        const raw = storage.getItem(DEMO_REPORTS_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        const map = parsed && typeof parsed === 'object' ? parsed : {};
+        map[cleanEmail] = updated;
         storage.setItem(DEMO_REPORTS_KEY, JSON.stringify(map));
       } catch {
-        // Fallback jika kuota dataUrl foto penuh
-        const compact = items.map((r) => ({
-          ...r,
-          photoPreviews: Array.isArray(r.photoPreviews)
-            ? r.photoPreviews.slice(0, 1)
-            : [],
-        }));
-        map[cleanEmail] = compact;
-        storage.setItem(DEMO_REPORTS_KEY, JSON.stringify(map));
+        // Fallback Level 1: Simpan foto pertama saja jika kuota hampir penuh
+        try {
+          const raw = storage.getItem(DEMO_REPORTS_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          const map = parsed && typeof parsed === 'object' ? parsed : {};
+          const compact = updated.map((r) => ({
+            ...r,
+            photoPreviews: Array.isArray(r.photoPreviews)
+              ? r.photoPreviews.slice(0, 1)
+              : [],
+          }));
+          map[cleanEmail] = compact;
+          storage.setItem(DEMO_REPORTS_KEY, JSON.stringify(map));
+        } catch {
+          // Fallback Level 2: Simpan metadata lengkap tanpa meledak
+          try {
+            const raw = storage.getItem(DEMO_REPORTS_KEY);
+            const parsed = raw ? JSON.parse(raw) : {};
+            const map = parsed && typeof parsed === 'object' ? parsed : {};
+            map[cleanEmail] = updated.map((r) => ({
+              ...r,
+              photoPreviews: (r.photoPreviews || []).map((p) => ({
+                id: p.id,
+                name: p.name,
+                size: p.size,
+                previewUrl: p.previewUrl && p.previewUrl.length > 60000 ? '' : p.previewUrl,
+              })),
+            }));
+            storage.setItem(DEMO_REPORTS_KEY, JSON.stringify(map));
+          } catch {
+            // Abaikan kegagalan storage individual
+          }
+        }
       }
     };
 
-    saveToStorage(window.localStorage, updated);
-    saveToStorage(window.sessionStorage, updated);
+    saveToStorage(window.sessionStorage);
+    saveToStorage(window.localStorage);
 
     return updated;
   } catch {

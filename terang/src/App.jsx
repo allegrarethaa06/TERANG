@@ -72,6 +72,8 @@ export default function App() {
   const {
     user: currentUser,
     isAuthenticated,
+    isDemoMode,
+    authLoading,
     register,
     login,
     logout,
@@ -81,11 +83,12 @@ export default function App() {
   // Jika pengguna kembali ke Landing Page (/), akhiri sesi demo dengan aman
   // agar saat menekan Masuk pengguna bisa login kembali.
   // Akun demo dan data laporan yang tersimpan tidak akan terhapus.
+  // Untuk sesi Supabase produksi, sesi tetap dipertahankan.
   useEffect(() => {
-    if (location.pathname === '/' && isAuthenticated) {
+    if (location.pathname === '/' && isAuthenticated && isDemoMode) {
       logout();
     }
-  }, [location.pathname, isAuthenticated, logout]);
+  }, [location.pathname, isAuthenticated, isDemoMode, logout]);
 
   const featuredReport = SAMPLE_REPORTS[0];
 
@@ -145,6 +148,26 @@ export default function App() {
       />
     </div>
   );
+
+  // Tunggu pemulihan sesi Supabase agar refresh halaman pribadi tidak salah redirect
+  if (authLoading) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: "'Inter', sans-serif",
+          color: '#271A62',
+        }}
+      >
+        Memuat…
+      </div>
+    );
+  }
 
   return (
     <>

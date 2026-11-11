@@ -12,6 +12,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import { useAuth } from '../context/AuthContext';
+import { normalizeReportId } from '../services/demoAuthService';
 import { SAMPLE_REPORTS } from '../data/reportsData';
 import { LAST_SUBMITTED_REPORT_ID_KEY } from './LaporanTerkirimPage';
 import {
@@ -218,7 +219,7 @@ function createPersistablePhotoDataUrl(file) {
         const img = new Image();
         img.onload = () => {
           try {
-            const maxDim = 760;
+            const maxDim = 800;
             let width = img.naturalWidth || img.width || maxDim;
             let height = img.naturalHeight || img.height || maxDim;
             if (width > maxDim || height > maxDim) {
@@ -231,16 +232,33 @@ function createPersistablePhotoDataUrl(file) {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             if (!ctx) {
-              resolve(rawDataUrl);
+              resolve(rawDataUrl.length < 250000 ? rawDataUrl : '');
               return;
             }
             ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', 0.76));
+            let compressed = canvas.toDataURL('image/jpeg', 0.70);
+
+            // Jika ukuran masih di atas 110KB, turunkan dimensi agar aman di storage
+            if (compressed.length > 110000) {
+              const smallerDim = 600;
+              const ratio2 = Math.min(smallerDim / width, smallerDim / height);
+              const w2 = Math.max(1, Math.round(width * ratio2));
+              const h2 = Math.max(1, Math.round(height * ratio2));
+              const c2 = document.createElement('canvas');
+              c2.width = w2;
+              c2.height = h2;
+              const ctx2 = c2.getContext('2d');
+              if (ctx2) {
+                ctx2.drawImage(img, 0, 0, w2, h2);
+                compressed = c2.toDataURL('image/jpeg', 0.65);
+              }
+            }
+            resolve(compressed);
           } catch {
-            resolve(rawDataUrl);
+            resolve(rawDataUrl.length < 250000 ? rawDataUrl : '');
           }
         };
-        img.onerror = () => resolve(rawDataUrl);
+        img.onerror = () => resolve('');
         img.src = rawDataUrl;
       };
       reader.onerror = () => resolve('');
@@ -368,12 +386,13 @@ function PencilIcon() {
 
 export default function BuatLaporanPage({ user, onLogout }) {
   const navigate = useNavigate();
-  const { addUserReport } = useAuth();
+  const { submitReport } = useAuth();
 
   // Form state (persisted across Step 1 <-> Step 2 <-> Step 3)
   const [formData, setFormData] = useState(() => loadSavedDraft());
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [submittedReport, setSubmittedReport] = useState(null);
 
   // Step 2 — Upload Foto state (menyimpan file asli yang dipilih pengguna beserta preview URL asli)
@@ -838,14 +857,28 @@ export default function BuatLaporanPage({ user, onLogout }) {
         )}) melebihi batas maksimal 5 MB per foto.`;
         continue;
       }
-      validItems.push({
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      const photoId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const photoItem = {
+        id: photoId,
         file,
         name: file.name,
         size: file.size,
         type: file.type,
         previewUrl: URL.createObjectURL(file),
+        dataUrl: '',
+      };
+
+      // Kompresi di latar belakang agar dataUrl siap sebelum pengguna beralih ke Step 3 / Kirim
+      createPersistablePhotoDataUrl(file).then((dUrl) => {
+        if (dUrl) {
+          photoItem.dataUrl = dUrl;
+          setPhotos((prevList) =>
+            prevList.map((p) => (p.id === photoId ? { ...p, dataUrl: dUrl } : p))
+          );
+        }
       });
+
+      validItems.push(photoItem);
     }
 
     if (validItems.length === 0) {
@@ -1070,7 +1103,10 @@ export default function BuatLaporanPage({ user, onLogout }) {
     // Konversi foto ke Data URL terkompresi agar tetap muncul di Dashboard, Laporan Saya, & Detail Laporan setelah navigasi/refresh
     const persistedPreviews = await Promise.all(
       photos.map(async (p) => {
-        const dataUrl = await createPersistablePhotoDataUrl(p.file);
+        let dataUrl = p.dataUrl;
+        if (!dataUrl && p.file) {
+          dataUrl = await createPersistablePhotoDataUrl(p.file);
+        }
         return {
           id: p.id,
           name: p.name,
@@ -1080,7 +1116,28 @@ export default function BuatLaporanPage({ user, onLogout }) {
       })
     );
 
-    const reportNumber = Math.floor(100000 + Math.random() * 900000);
+    // Validasi: Jika pengguna memilih foto namun gagal diproses, beri peringatan jelas (jangan submit tanpa foto)
+    if (photos.length > 0 && persistedPreviews.every((p) => !p.previewUrl)) {
+      setIsSubmitting(false);
+      setPhotoUploadError(
+        'Foto bukti gagal diproses ke format penyimpanan. Silakan coba unggah foto dengan format JPG atau PNG.'
+      );
+      setErrors((prev) => ({
+        ...prev,
+        photos:
+          'Foto bukti gagal diproses ke format penyimpanan. Silakan coba unggah foto dengan format JPG atau PNG.',
+      }));
+      return;
+    }
+
+    // Pastikan ID laporan unik dan tidak bentrok dengan ID laporan lama
+    const existingReports = Array.isArray(user?.reports) ? user.reports : [];
+    const existingReportIds = new Set(existingReports.map((r) => normalizeReportId(r.id)));
+    let reportNumber = Math.floor(100000 + Math.random() * 900000);
+    while (existingReportIds.has(`TRG-${reportNumber}`)) {
+      reportNumber = Math.floor(100000 + Math.random() * 900000);
+    }
+
     const createdReport = {
       id: `TRG-${reportNumber}`,
       title:
@@ -1101,10 +1158,11 @@ export default function BuatLaporanPage({ user, onLogout }) {
       safetyImpact: formData.safetyImpact,
       reporterVisibility: visibilityMode,
       reporterPublicName: publicReporterName,
-      photoCount: photos.length,
-      photoNames: photos.map((p) => p.name),
+      photoCount: persistedPreviews.length,
+      photoNames: persistedPreviews.map((p) => p.name),
       photoUrl: persistedPreviews[0]?.previewUrl || '',
       photoPreviews: persistedPreviews,
+      isDemoData: false, // Menjamin foto asli pengguna tidak tertukar dengan foto ilustrasi simulasi
       status: 'Menunggu Verifikasi',
       createdAt: new Date().toLocaleDateString('id-ID', {
         day: 'numeric',
@@ -1113,11 +1171,27 @@ export default function BuatLaporanPage({ user, onLogout }) {
       }),
     };
 
-    if (typeof addUserReport === 'function') {
-      addUserReport(createdReport);
+    setSubmitError('');
+    const submitResult = await submitReport(
+      createdReport,
+      photos.map((p) => p.file)
+    );
+
+    if (!submitResult || !submitResult.ok) {
+      // Gagal menyimpan: pertahankan draft & foto agar pengguna bisa mencoba lagi
+      setIsSubmitting(false);
+      setSubmitError(
+        submitResult?.error ||
+          'Laporan gagal dikirim. Periksa koneksi internet lalu coba lagi.'
+      );
+      return;
     }
 
-    // Bersihkan draft & arahkan ke halaman sukses /laporan-terkirim
+    // Gunakan data final dari server (ID resmi & foto tersimpan)
+    const savedReport = submitResult.report || createdReport;
+    createdReport.id = savedReport.id || createdReport.id;
+
+    // Bersihkan blob URL sementara yang sudah digantikan oleh dataUrl permanen
     photos.forEach((p) => {
       if (p?.previewUrl && p.previewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(p.previewUrl);
@@ -2437,6 +2511,15 @@ export default function BuatLaporanPage({ user, onLogout }) {
               <p className="lapor-submit-inline-note">
                 Pastikan titik lokasi, foto bukti, dan keterangan kerusakan sudah sesuai kondisi sebenarnya sebelum mengirim laporan.
               </p>
+
+              {submitError && (
+                <p
+                  role="alert"
+                  style={{ color: '#B42318', fontSize: '0.9rem', margin: '0 0 12px', fontWeight: 500 }}
+                >
+                  {submitError}
+                </p>
+              )}
 
               <div className="lapor-footer-actions">
                 <button

@@ -82,7 +82,9 @@ export default function DashboardPage({ user, onLogout }) {
             <ul className="dashboard-report-list">
               {userReports.map((item, idx) => {
                 const thumbUrl =
-                  item.photoUrl || item.photoPreviews?.[0]?.previewUrl || '';
+                  item.photoUrl ||
+                  item.photoPreviews?.[0]?.previewUrl ||
+                  (item.isDemoData ? '/images/ubud-jalan-raya-pothole-2009.jpg' : '');
                 const reportId = item.id || `TRG-${idx + 1}`;
                 return (
                   <li
@@ -95,6 +97,13 @@ export default function DashboardPage({ user, onLogout }) {
                           src={thumbUrl}
                           alt={`Foto laporan ${reportId}`}
                           className="dashboard-report-thumb"
+                          onError={(e) => {
+                            if (item.isDemoData) {
+                              e.currentTarget.src = '/images/ubud-jalan-raya-pothole-2009.jpg';
+                            } else {
+                              e.currentTarget.style.display = 'none';
+                            }
+                          }}
                         />
                       )}
                       <div className="dashboard-report-item-main">
