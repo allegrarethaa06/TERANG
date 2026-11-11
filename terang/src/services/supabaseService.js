@@ -90,14 +90,14 @@ export async function sbSignUp({ fullName, email, password }) {
     return { ok: false, field: 'email', code: 'EMAIL_EXISTS', error: 'Email ini sudah terdaftar. Silakan masuk.' };
   }
 
-  // Verifikasi email aktif -> belum ada sesi sampai pengguna klik tautan di email
+  // Verifikasi email aktif -> pendaftaran berhasil, belum ada sesi sampai verifikasi email selesai
   if (!data?.session) {
     return {
-      ok: false,
-      field: 'email',
-      code: 'EMAIL_VERIFICATION_REQUIRED',
+      ok: true,
       needsEmailVerification: true,
-      error: `Akun dibuat. Kami mengirim tautan verifikasi ke ${cleanEmail}. Buka email tersebut, lalu masuk.`,
+      code: 'EMAIL_VERIFICATION_REQUIRED',
+      email: cleanEmail,
+      user: null,
     };
   }
 

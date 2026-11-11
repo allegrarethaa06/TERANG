@@ -24,6 +24,27 @@ function ErrorIcon() {
   );
 }
 
+function MailCheckIcon({ className = '', size = 34 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h9" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      <path d="m16 19 2 2 4-4" />
+    </svg>
+  );
+}
+
 function evaluatePasswordStrength(pw) {
   if (!pw) {
     return { level: 0, label: '', cssClass: '', badgeClass: '' };
@@ -93,6 +114,9 @@ export default function RegisterPage({ onRegister }) {
   const [errors, setErrors] = useState({});
   const [imgError, setImgError] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const nameRef = useRef(null);
   const emailRef = useRef(null);
@@ -186,26 +210,51 @@ export default function RegisterPage({ onRegister }) {
       return;
     }
 
-    const actionFn = typeof onRegister === 'function' ? onRegister : register;
-    const result = await actionFn({
-      fullName: formData.fullName.trim(),
-      email: formData.email.trim(),
-      password: formData.password,
-    });
+    setIsSubmitting(true);
+    try {
+      const actionFn = typeof onRegister === 'function' ? onRegister : register;
+      const result = await actionFn({
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+      });
 
-    if (result && result.ok && result.user) {
-      // Daftar berhasil -> langsung Dashboard
-      consumePendingRedirect();
-      navigate('/dashboard', { replace: true });
-      return;
-    }
+      if (result && result.ok && result.user) {
+        // Daftar berhasil -> langsung Dashboard
+        consumePendingRedirect();
+        navigate('/dashboard', { replace: true });
+        return;
+      }
 
-    if (result && result.error) {
-      const targetField = result.field || 'email';
-      setErrors((prev) => ({
-        ...prev,
-        [targetField]: result.error,
-      }));
+      if (
+        result &&
+        (result.needsEmailVerification ||
+          result.code === 'EMAIL_VERIFICATION_REQUIRED')
+      ) {
+        // Pendaftaran Supabase berhasil & verifikasi email diperlukan
+        const targetEmail = (result.email || formData.email).trim();
+        setRegisteredEmail(targetEmail);
+        setNeedsVerification(true);
+        // Sembunyikan formulir dan hapus kata sandi dari state
+        setFormData({
+          fullName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
+        setErrors({});
+        return;
+      }
+
+      if (result && result.error) {
+        const targetField = result.field || 'email';
+        setErrors((prev) => ({
+          ...prev,
+          [targetField]: result.error,
+        }));
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -265,22 +314,68 @@ export default function RegisterPage({ onRegister }) {
           </Link>
         </header>
 
-        <div className="auth-form-container">
-          <div className="auth-header-block">
-            <h1 className="auth-heading">Buat akun TERANG.</h1>
-            <p className="auth-subheading">
-              Daftar untuk mulai melapor dan memantau perkembangannya.
-            </p>
-
-            {searchParams.get('redirect') === '/buat-laporan' && (
-              <div className="auth-redirect-notice" role="status">
-                Setelah pendaftaran berhasil, Anda akan langsung diarahkan ke halaman{' '}
-                <strong>Buat Laporan</strong> (<code>/buat-laporan</code>).
+        {needsVerification ? (
+          <div className="auth-confirm-container" role="status" aria-live="polite">
+            <div className="auth-confirm-card">
+              <div className="auth-confirm-icon-bubble" aria-hidden="true">
+                <MailCheckIcon className="auth-confirm-icon" />
               </div>
-            )}
-          </div>
 
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
+              <h1 className="auth-confirm-title">Cek Email Kamu!</h1>
+
+              <p className="auth-confirm-desc">
+                Selangkah lagi untuk bergabung dengan TERANG. Kami telah memproses pendaftaranmu dan mengirimkan tautan verifikasi ke:
+              </p>
+
+              <div className="auth-confirm-email-box">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="auth-confirm-email-icon"
+                  aria-hidden="true"
+                >
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                <span className="auth-confirm-email-address">{registeredEmail}</span>
+              </div>
+
+              <p className="auth-confirm-instructions">
+                Buka kotak masuk, klik tautan verifikasi, lalu masuk ke akun TERANG untuk mulai membuat laporan.
+              </p>
+
+              <Link to={masukPath} className="auth-confirm-btn">
+                Masuk ke TERANG
+              </Link>
+
+              <p className="auth-confirm-help">
+                Belum menemukan email? Periksa folder <strong>Spam</strong> atau <strong>Promosi</strong>.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="auth-form-container">
+            <div className="auth-header-block">
+              <h1 className="auth-heading">Buat akun TERANG.</h1>
+              <p className="auth-subheading">
+                Daftar untuk mulai melapor dan memantau perkembangannya.
+              </p>
+
+              {searchParams.get('redirect') === '/buat-laporan' && (
+                <div className="auth-redirect-notice" role="status">
+                  Setelah pendaftaran berhasil, Anda akan langsung diarahkan ke halaman{' '}
+                  <strong>Buat Laporan</strong> (<code>/buat-laporan</code>).
+                </div>
+              )}
+            </div>
+
+            <form className="auth-form" onSubmit={handleSubmit} noValidate>
             {/* Nama Lengkap */}
             <div className="auth-field">
               <label htmlFor="register-fullname" className="auth-label">
@@ -478,8 +573,12 @@ export default function RegisterPage({ onRegister }) {
             </div>
 
             {/* Submit Button */}
-            <button type="submit" className="auth-submit-btn">
-              Buat Akun
+            <button
+              type="submit"
+              className="auth-submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Memproses...' : 'Buat Akun'}
             </button>
 
             <p className="auth-switch-text">
@@ -490,6 +589,7 @@ export default function RegisterPage({ onRegister }) {
             </p>
           </form>
         </div>
+      )}
       </main>
     </div>
   );
